@@ -59,7 +59,6 @@ foreign import getInputImpl
   :: { name :: String, options :: Nullable InputOptions }
   -> Effect (Nullable String)
 
--- TODO: handle thrown error
 -- | Gets the value of an input.  The value is also trimmed.
 getInput
   :: { name :: String, options :: Maybe InputOptions }
