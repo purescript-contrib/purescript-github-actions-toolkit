@@ -12,6 +12,7 @@ You can edit this file as you like.
   , "heterogeneous"
   , "nullable"
   , "psci-support"
+  , "transformers"
   ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]
