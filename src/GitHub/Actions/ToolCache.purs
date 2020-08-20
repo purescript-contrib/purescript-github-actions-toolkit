@@ -14,99 +14,106 @@ module GitHub.Actions.ToolCache
 
 import Prelude
 
+import Control.Monad.Except.Trans (throwError)
 import Control.Promise (Promise, toAffE)
-import Data.Maybe (Maybe)
+import Data.Maybe (Maybe(..))
 import Data.Nullable (Nullable, toMaybe, toNullable)
+import Data.Version (Version)
+import Data.Version as Version
 import Effect (Effect)
 import Effect.Class (liftEffect)
-import GitHub.Actions.Types (ActionsM)
+import Effect.Exception (error)
+import GitHub.Actions.Types (ActionsM, Tool)
 import GitHub.Actions.Utils (tryActionsM)
+import Node.Path (FilePath)
 
-foreign import downloadToolImpl :: { url :: String, dest :: Nullable String, auth :: Nullable String } -> Effect (Promise (Nullable String))
+foreign import downloadToolImpl :: { url :: String, dest :: Nullable FilePath, auth :: Nullable String } -> Effect (Promise (Nullable String))
 
 -- | Download a tool from an url and stream it into a file
-downloadTool :: { url :: String, dest :: Maybe String, auth :: Maybe String } -> ActionsM (Maybe String)
-downloadTool { url, dest, auth } =
-  downloadToolImpl { url, dest: toNullable dest, auth: toNullable auth }
-    # toAffE
-    # tryActionsM
-    # map toMaybe
+downloadTool
+  :: { url :: String, dest :: Maybe FilePath, auth :: Maybe String }
+  -> ActionsM String
+downloadTool { url, dest, auth } = do
+  mbPath <- map toMaybe $ tryActionsM $ toAffE $ downloadToolImpl { url, dest: toNullable dest, auth: toNullable auth }
+  case mbPath of
+    Nothing -> throwError (error "Failed to download tool")
+    Just path -> pure path
 
-foreign import extract7cImpl :: { file :: String, dest :: Nullable String, _7zPath :: Nullable String } -> Effect (Promise (Nullable String))
+foreign import extract7cImpl :: { file :: FilePath, dest :: Nullable FilePath, _7zPath :: Nullable String } -> Effect (Promise (Nullable String))
 
 -- | Extract a .7z file
-extract7c :: { file :: String, dest :: Maybe String, _7zPath :: Maybe String } -> ActionsM (Maybe String)
-extract7c { file, dest, _7zPath } =
-  extract7cImpl { file, dest: toNullable dest, _7zPath: toNullable _7zPath }
-    # toAffE
-    # tryActionsM
-    # map toMaybe
+extract7c :: { file :: FilePath, dest :: Maybe FilePath, _7zPath :: Maybe FilePath } -> ActionsM String
+extract7c { file, dest, _7zPath } = do
+  mbPath <- map toMaybe $ tryActionsM $ toAffE $ extract7cImpl { file, dest: toNullable dest, _7zPath: toNullable _7zPath }
+  case mbPath of
+    Nothing -> throwError (error "Failed to extract .7z file")
+    Just path -> pure path
 
-foreign import extractTarImpl :: { file :: String, dest :: Nullable String, flags :: Nullable String } -> Effect (Promise (Nullable String))
+foreign import extractTarImpl :: { file :: FilePath, dest :: Nullable FilePath, flags :: Nullable String } -> Effect (Promise (Nullable FilePath))
 
 -- | Extract a compressed tar archive
-extractTar :: { file :: String, dest :: Maybe String, flags :: Maybe String } -> ActionsM (Maybe String)
-extractTar { file, dest, flags } =
-  extractTarImpl { file, dest: toNullable dest, flags: toNullable flags }
-    # toAffE
-    # tryActionsM
-    # map toMaybe
+extractTar :: { file :: FilePath, dest :: Maybe FilePath, flags :: Maybe String } -> ActionsM FilePath
+extractTar { file, dest, flags } = do
+  mbPath <- map toMaybe $ tryActionsM $ toAffE $ extractTarImpl { file, dest: toNullable dest, flags: toNullable flags }
+  case mbPath of
+    Nothing -> throwError (error "failed to extract tar")
+    Just path -> pure path
 
-foreign import extractXarImpl :: { file :: String, dest :: Nullable String, flags :: Nullable String } -> Effect (Promise (Nullable String))
+foreign import extractXarImpl :: { file :: FilePath, dest :: Nullable FilePath, flags :: Nullable String } -> Effect (Promise (Nullable FilePath))
 
 -- | Extract a xar compatible archive
-extractXar :: { file :: String, dest :: Maybe String, flags :: Maybe String } -> ActionsM (Maybe String)
+extractXar :: { file :: FilePath, dest :: Maybe FilePath, flags :: Maybe String } -> ActionsM (Maybe FilePath)
 extractXar { file, dest, flags } =
   extractXarImpl { file, dest: toNullable dest, flags: toNullable flags }
     # toAffE
     # tryActionsM
     # map toMaybe
 
-foreign import extractZipImpl :: { file :: String, dest :: Nullable String } -> Effect (Promise (Nullable String))
+foreign import extractZipImpl :: { file :: FilePath, dest :: Nullable FilePath } -> Effect (Promise (Nullable FilePath))
 
 -- | Extract a zip
-extractZip :: { file :: String, dest :: Maybe String } -> ActionsM (Maybe String)
+extractZip :: { file :: FilePath, dest :: Maybe FilePath } -> ActionsM (Maybe FilePath)
 extractZip { file, dest } =
   extractZipImpl { file, dest: toNullable dest }
     # toAffE
     # tryActionsM
     # map toMaybe
 
-foreign import cacheDirImpl :: { sourceDir :: String, tool :: String, version :: String, arch :: Nullable String } -> Effect (Promise (Nullable String))
+foreign import cacheDirImpl :: { sourceDir :: FilePath, tool :: Tool, version :: String, arch :: Nullable String } -> Effect (Promise (Nullable FilePath))
 
 -- | Caches a directory and installs it into the tool cacheDir
-cacheDir :: { sourceDir :: String, tool :: String, version :: String, arch :: Maybe String } -> ActionsM (Maybe String)
+cacheDir :: { sourceDir :: String, tool :: Tool, version :: Version, arch :: Maybe String } -> ActionsM (Maybe String)
 cacheDir { sourceDir, tool, version, arch } =
-  cacheDirImpl { sourceDir, tool, version, arch: toNullable arch }
+  cacheDirImpl { sourceDir, tool, version: Version.showVersion version, arch: toNullable arch }
     # toAffE
     # tryActionsM
     # map toMaybe
 
-foreign import cacheFileImpl :: { sourceFile :: String, targetFile :: String, tool :: String, version :: String, arch :: Nullable String } -> Effect (Promise (Nullable String))
+foreign import cacheFileImpl :: { sourceFile :: FilePath, targetFile :: FilePath, tool :: Tool, version :: String, arch :: Nullable String } -> Effect (Promise (Nullable FilePath))
 
 -- | Caches a downloaded file (GUID) and installs it
 -- | into the tool cache with a given targetName
-cacheFile :: { sourceFile :: String, targetFile :: String, tool :: String, version :: String, arch :: Maybe String } -> ActionsM (Maybe String)
-cacheFile { sourceFile, targetFile, tool, version, arch } =
-  cacheFileImpl { sourceFile, targetFile, tool, version, arch: toNullable arch }
-    # toAffE
-    # tryActionsM
-    # map toMaybe
+cacheFile :: { sourceFile :: FilePath, targetFile :: FilePath, tool :: Tool, version :: Version, arch :: Maybe String } -> ActionsM FilePath
+cacheFile { sourceFile, targetFile, tool, version, arch } = do
+  mbPath <- map toMaybe $ tryActionsM $ toAffE $ cacheFileImpl { sourceFile, targetFile, tool, version: Version.showVersion version, arch: toNullable arch }
+  case mbPath of
+    Nothing -> throwError (error "Failed to cache file")
+    Just path -> pure path
 
-foreign import findImpl :: { toolName :: String, versionSpec :: String, arch :: Nullable String } -> Effect (Nullable String)
+foreign import findImpl :: { toolName :: Tool, versionSpec :: String, arch :: Nullable String } -> Effect (Nullable FilePath)
 
 -- | Finds the path to a tool version in the local installed tool cache
-find :: { toolName :: String, versionSpec :: String, arch :: Maybe String } -> ActionsM (Maybe String)
+find :: { toolName :: Tool, versionSpec :: String, arch :: Maybe String } -> ActionsM (Maybe FilePath)
 find { toolName, versionSpec, arch } =
   findImpl { toolName, versionSpec, arch: toNullable arch }
     # liftEffect
     # tryActionsM
     # map toMaybe
 
-foreign import findAllVersionsImpl :: { toolName :: String, arch :: Nullable String } -> Effect (Array String)
+foreign import findAllVersionsImpl :: { toolName :: Tool, arch :: Nullable String } -> Effect (Array FilePath)
 
 -- | Finds the paths to all versions of a tool that are installed in the local tool cache
-findAllVersions :: { toolName :: String, arch :: Maybe String } -> ActionsM (Array String)
+findAllVersions :: { toolName :: Tool, arch :: Maybe String } -> ActionsM (Array FilePath)
 findAllVersions { toolName, arch } =
   findAllVersionsImpl { toolName, arch: toNullable arch }
     # liftEffect

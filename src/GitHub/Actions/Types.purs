@@ -7,3 +7,5 @@ import Effect.Exception (Error)
 type ActionsError = Error
 
 type ActionsM a = ExceptT ActionsError Aff a
+
+type Tool = String

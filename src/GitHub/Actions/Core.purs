@@ -109,7 +109,7 @@ error = liftEffect <<< errorImpl
 
 foreign import warningImpl :: String -> Effect Unit
 
--- | Adds an warning issue
+-- | Adds a warning issue
 warning :: String -> ActionsM Unit
 warning = liftEffect <<< warningImpl
 

@@ -10,9 +10,11 @@ You can edit this file as you like.
   , "effect"
   , "foreign-object"
   , "heterogeneous"
+  , "node-path"
   , "nullable"
   , "psci-support"
   , "transformers"
+  , "versions"
   ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]

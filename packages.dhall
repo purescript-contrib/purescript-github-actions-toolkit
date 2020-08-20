@@ -126,3 +126,25 @@ let overrides = {=}
 let additions = {=}
 
 in  upstream // overrides // additions
+  with versions =
+    { dependencies =
+        [ "console"
+        , "control"
+        , "either"
+        , "exceptions"
+        , "foldable-traversable"
+        , "functions"
+        , "integers"
+        , "lists"
+        , "maybe"
+        , "orders"
+        , "parsing"
+        , "partial"
+        , "strings"
+        ]
+    , repo =
+        "https://github.com/hdgarrood/purescript-versions.git"
+    , version =
+        "v5.0.1"
+    }
+
