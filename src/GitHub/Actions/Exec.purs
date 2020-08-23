@@ -1,3 +1,5 @@
+-- | Exports functions from the @actions/exec module provided by GitHub
+-- | https://github.com/actions/toolkit/tree/main/packages/exec
 module GitHub.Actions.Exec
   ( exec
   , ExecOptions

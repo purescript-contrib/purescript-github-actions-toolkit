@@ -1,3 +1,5 @@
+-- | Exports functions from the @actions/tool-cache module provided by GitHub
+-- | https://github.com/actions/toolkit/tree/main/packages/tool-cache
 module GitHub.Actions.ToolCache
   ( downloadTool
   , extract7c
@@ -17,6 +19,7 @@ module GitHub.Actions.ToolCache
 import Prelude
 
 import Control.Monad.Except.Trans (ExceptT, throwError)
+import Control.MonadPlus (guard)
 import Control.Promise (Promise, toAffE)
 import Data.Maybe (Maybe(..))
 import Data.Nullable (Nullable, toMaybe, toNullable)
@@ -26,21 +29,25 @@ import Effect (Effect)
 import Effect.Aff (Aff)
 import Effect.Class (liftEffect)
 import Effect.Exception (Error, error)
+import Effect.Uncurried (EffectFn1, runEffectFn1)
+import GitHub.Actions.Core as Core
 import GitHub.Actions.Types (Tool)
 import GitHub.Actions.Utils (tryActionsM)
 import Node.Path (FilePath)
 
-foreign import downloadToolImpl :: { url :: String, dest :: Nullable FilePath, auth :: Nullable String } -> Effect (Promise (Nullable String))
+foreign import downloadToolImpl :: { url :: String, dest :: Nullable FilePath, auth :: Nullable String } -> Effect (Promise (Nullable FilePath))
 
 -- | Download a tool from an url and stream it into a file
 downloadTool
   :: { url :: String, dest :: Maybe FilePath, auth :: Maybe String }
-  -> ExceptT Error Aff String
+  -> ExceptT Error Aff FilePath
 downloadTool { url, dest, auth } = do
   mbPath <- map toMaybe $ tryActionsM $ toAffE $ downloadToolImpl { url, dest: toNullable dest, auth: toNullable auth }
   case mbPath of
     Nothing -> throwError (error "Failed to download tool")
-    Just path -> pure path
+    Just path -> do
+      liftEffect do Core.info path
+      pure path
 
 foreign import extract7cImpl :: { file :: FilePath, dest :: Nullable FilePath, _7zPath :: Nullable String } -> Effect (Promise (Nullable String))
 
@@ -52,12 +59,13 @@ extract7c { file, dest, _7zPath } = do
     Nothing -> throwError (error "Failed to extract .7z file")
     Just path -> pure path
 
-foreign import extractTarImpl :: { file :: FilePath, dest :: Nullable FilePath, flags :: Nullable String } -> Effect (Promise (Nullable FilePath))
+-- TODO
+foreign import extractTar1Impl :: EffectFn1 FilePath (Promise (Nullable FilePath))
 
 -- | Extract a compressed tar archive
 extractTar :: { file :: FilePath, dest :: Maybe FilePath, flags :: Maybe String } -> ExceptT Error Aff FilePath
 extractTar { file, dest, flags } = do
-  mbPath <- map toMaybe $ tryActionsM $ toAffE $ extractTarImpl { file, dest: toNullable dest, flags: toNullable flags }
+  mbPath <- map toMaybe $ tryActionsM $ toAffE $ runEffectFn1 extractTar1Impl file
   case mbPath of
     Nothing -> throwError (error "failed to extract tar")
     Just path -> pure path
@@ -92,13 +100,13 @@ cacheDir { sourceDir, tool, version, arch } =
     # tryActionsM
     # map toMaybe
 
-foreign import cacheFileImpl :: { sourceFile :: FilePath, targetFile :: FilePath, tool :: Tool, version :: String, arch :: Nullable String } -> Effect (Promise (Nullable FilePath))
+foreign import cacheFileImpl :: { sourceFile :: FilePath, targetFile :: FilePath, tool :: Tool, version :: String } -> Effect (Promise (Nullable FilePath))
 
 -- | Caches a downloaded file (GUID) and installs it
 -- | into the tool cache with a given targetName
-cacheFile :: { sourceFile :: FilePath, targetFile :: FilePath, tool :: Tool, version :: Version, arch :: Maybe String } -> ExceptT Error Aff FilePath
-cacheFile { sourceFile, targetFile, tool, version, arch } = do
-  mbPath <- map toMaybe $ tryActionsM $ toAffE $ cacheFileImpl { sourceFile, targetFile, tool, version: Version.showVersion version, arch: toNullable arch }
+cacheFile :: { sourceFile :: FilePath, targetFile :: FilePath, tool :: Tool, version :: Version } -> ExceptT Error Aff FilePath
+cacheFile { sourceFile, targetFile, tool, version } = do
+  mbPath <- map toMaybe $ tryActionsM $ toAffE $ cacheFileImpl { sourceFile, targetFile, tool, version: Version.showVersion version } -- add arch case
   case mbPath of
     Nothing -> throwError (error "Failed to cache file")
     Just path -> pure path
@@ -112,6 +120,7 @@ find { toolName, versionSpec, arch } =
     # liftEffect
     # tryActionsM
     # map toMaybe
+    # map (\path -> guard (path /= Just "") *> path)
 
 foreign import findAllVersionsImpl :: { toolName :: Tool, arch :: Nullable String } -> Effect (Array FilePath)
 
