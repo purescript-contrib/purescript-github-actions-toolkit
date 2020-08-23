@@ -16,6 +16,8 @@ You can edit this file as you like.
   , "nullable"
   , "psci-support"
   , "transformers"
+  , "tuples"
+  , "variant"
   , "versions"
   ]
 , packages = ./packages.dhall
