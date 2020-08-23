@@ -1,52 +1,37 @@
 const core = require("@actions/core");
 
-exports.exportVariableImpl = ({ key, value }) => () =>
-  core.exportVariable(key, value);
+exports.exportVariableImpl = core.exportVariable;
 
-exports.setSecretImpl = (secret) => () =>
-  core.setSecret(secret);
+exports.setSecretImpl = core.setSecret;
 
-exports.addPathImpl = (path) => () =>
-  core.addPath(path);
+exports.addPathImpl = core.addPath;
 
-exports.getInputImpl = ({ name, options }) => () =>
-  core.getInput(name, options);
+exports.getInput1Impl = core.getInput;
 
-exports.setOutputImpl = ({ name, value }) => () =>
-  core.setOutput(name, value);
+exports.getInput2Impl = core.getInput;
 
-exports.setCommandEchoImpl = (enabled) => () =>
-  core.setCommandEcho(enabled);
+exports.setOutputImpl = core.setOutput;
 
-exports.setFailedImpl = (msg) => () =>
-  core.setFailed(msg);
+exports.setCommandEchoImpl = core.setCommandEcho;
 
-exports.isDebugImpl = () =>
-  core.isDebug();
+exports.setFailedImpl = core.setFailed;
 
-exports.debugImpl = (msg) => () =>
-  core.debug(msg);
+exports.isDebugImpl = core.isDebug;
 
-exports.errorImpl = (msg) => () =>
-  core.error(msg);
+exports.debugImpl = core.debug;
 
-exports.warningImpl = (msg) => () =>
-  core.warning(msg);
+exports.errorImpl = core.error;
 
-exports.infoImpl = (msg) => () =>
-  core.info(msg);
+exports.warningImpl = core.warning;
 
-exports.startGroupImpl = (name) => () =>
-  core.startGroup(name);
+exports.infoImpl = core.info;
 
-exports.endGroupImpl = (name) => () =>
-  core.endGroup(name);
+exports.startGroupImpl = core.startGroup;
 
-exports.saveStateImpl = ({ name, value }) => () =>
-  core.saveState(name, value);
+exports.endGroupImpl = core.endGroup;
 
-exports.getStateImpl = (name) => () =>
-  core.getState(name);
+exports.saveStateImpl = core.saveState;
 
-exports.groupImpl = ({ name, fn }) => () =>
-  core.group(name, fn);
+exports.getStateImpl = core.getState;
+
+exports.groupImpl = core.group;
