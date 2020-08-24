@@ -18,118 +18,178 @@ module GitHub.Actions.ToolCache
 
 import Prelude
 
-import Control.Monad.Except.Trans (ExceptT, throwError)
-import Control.MonadPlus (guard)
+import Control.Monad.Error.Class (try)
+import Control.Monad.Except.Trans (ExceptT(..))
 import Control.Promise (Promise, toAffE)
 import Data.Maybe (Maybe(..))
 import Data.Nullable (Nullable, toMaybe, toNullable)
+import Data.Tuple.Nested ((/\))
 import Data.Version (Version)
 import Data.Version as Version
 import Effect (Effect)
 import Effect.Aff (Aff)
 import Effect.Class (liftEffect)
-import Effect.Exception (Error, error)
-import Effect.Uncurried (EffectFn1, runEffectFn1)
-import GitHub.Actions.Core as Core
+import Effect.Exception (Error)
+import Effect.Uncurried (EffectFn1, EffectFn2, EffectFn3, EffectFn4, EffectFn5, runEffectFn1, runEffectFn2, runEffectFn3, runEffectFn4, runEffectFn5)
+import GitHub.Actions.OptionalArguments (Optional2, handleOptional2)
 import GitHub.Actions.Types (Tool)
 import GitHub.Actions.Utils (tryActionsM)
 import Node.Path (FilePath)
 
-foreign import downloadToolImpl :: { url :: String, dest :: Nullable FilePath, auth :: Nullable String } -> Effect (Promise (Nullable FilePath))
+foreign import downloadTool1Impl :: EffectFn1 String (Promise FilePath)
+
+foreign import downloadTool2Impl :: EffectFn2 String FilePath (Promise FilePath)
+
+foreign import downloadTool3Impl :: EffectFn3 String FilePath String (Promise FilePath)
 
 -- | Download a tool from an url and stream it into a file
 downloadTool
-  :: { url :: String, dest :: Maybe FilePath, auth :: Maybe String }
+  :: String
+  -> Optional2 FilePath String
   -> ExceptT Error Aff FilePath
-downloadTool { url, dest, auth } = do
-  mbPath <- map toMaybe $ tryActionsM $ toAffE $ downloadToolImpl { url, dest: toNullable dest, auth: toNullable auth }
-  case mbPath of
-    Nothing -> throwError (error "Failed to download tool")
-    Just path -> do
-      liftEffect do Core.info path
-      pure path
+downloadTool url = do
+  handleOptional
+    >>> toAffE
+    >>> tryActionsM
+  where
+  handleOptional = handleOptional2
+    { none: \_ -> runEffectFn1 downloadTool1Impl url
+    , one: \dest -> runEffectFn2 downloadTool2Impl url dest
+    , two: \(dest /\ auth) -> runEffectFn3 downloadTool3Impl url dest auth
+    }
 
-foreign import extract7cImpl :: { file :: FilePath, dest :: Nullable FilePath, _7zPath :: Nullable String } -> Effect (Promise (Nullable String))
+foreign import extract7c1Impl :: EffectFn1 FilePath (Promise FilePath) -- { file :: FilePath, dest :: Nullable FilePath, _7zPath :: Nullable String } -> Effect (Promise (Nullable String))
+
+foreign import extract7c2Impl :: EffectFn2 FilePath FilePath (Promise FilePath)
+
+foreign import extract7c3Impl :: EffectFn3 FilePath FilePath FilePath (Promise FilePath)
 
 -- | Extract a .7z file
-extract7c :: { file :: FilePath, dest :: Maybe FilePath, _7zPath :: Maybe FilePath } -> ExceptT Error Aff String
-extract7c { file, dest, _7zPath } = do
-  mbPath <- map toMaybe $ tryActionsM $ toAffE $ extract7cImpl { file, dest: toNullable dest, _7zPath: toNullable _7zPath }
-  case mbPath of
-    Nothing -> throwError (error "Failed to extract .7z file")
-    Just path -> pure path
+extract7c :: FilePath -> Optional2 FilePath FilePath -> ExceptT Error Aff String
+extract7c file =
+  handleOptional
+    >>> toAffE
+    >>> tryActionsM
+  where
+  handleOptional = handleOptional2
+    { none: \_ -> runEffectFn1 extract7c1Impl file
+    , one: \dest -> runEffectFn2 extract7c2Impl file dest
+    , two: \(dest /\ _7cPath) -> runEffectFn3 extract7c3Impl file dest _7cPath
+    }
 
--- TODO
-foreign import extractTar1Impl :: EffectFn1 FilePath (Promise (Nullable FilePath))
+foreign import extractTar1Impl :: EffectFn1 FilePath (Promise FilePath)
+
+foreign import extractTar2Impl :: EffectFn2 FilePath FilePath (Promise FilePath)
+
+foreign import extractTar3Impl :: EffectFn3 FilePath FilePath (Array String) (Promise FilePath)
 
 -- | Extract a compressed tar archive
-extractTar :: { file :: FilePath, dest :: Maybe FilePath, flags :: Maybe String } -> ExceptT Error Aff FilePath
-extractTar { file, dest, flags } = do
-  mbPath <- map toMaybe $ tryActionsM $ toAffE $ runEffectFn1 extractTar1Impl file
-  case mbPath of
-    Nothing -> throwError (error "failed to extract tar")
-    Just path -> pure path
+extractTar :: FilePath -> Optional2 FilePath (Array String) -> ExceptT Error Aff FilePath
+extractTar file =
+  handleOptional
+    >>> toAffE
+    >>> tryActionsM
+  where
+  handleOptional = handleOptional2
+    { none: \_ -> runEffectFn1 extractTar1Impl file
+    , one: \dest -> runEffectFn2 extractTar2Impl file dest
+    , two: \(dest /\ flags) -> runEffectFn3 extractTar3Impl file dest flags
+    }
 
-foreign import extractXarImpl :: { file :: FilePath, dest :: Nullable FilePath, flags :: Nullable String } -> Effect (Promise (Nullable FilePath))
+foreign import extractXar1Impl :: EffectFn1 FilePath (Promise FilePath)  --{ file :: FilePath, dest :: Nullable FilePath, flags :: Nullable String } -> Effect (Promise (Nullable FilePath))
+
+foreign import extractXar2Impl :: EffectFn2 FilePath FilePath (Promise FilePath)
+
+foreign import extractXar3Impl :: EffectFn3 FilePath FilePath (Array String) (Promise FilePath)
 
 -- | Extract a xar compatible archive
-extractXar :: { file :: FilePath, dest :: Maybe FilePath, flags :: Maybe String } -> ExceptT Error Aff (Maybe FilePath)
-extractXar { file, dest, flags } =
-  extractXarImpl { file, dest: toNullable dest, flags: toNullable flags }
-    # toAffE
-    # tryActionsM
-    # map toMaybe
+extractXar :: FilePath -> Optional2 FilePath (Array String) -> ExceptT Error Aff FilePath
+extractXar file =
+  handleOptional
+    >>> toAffE
+    >>> tryActionsM
+  where
+  handleOptional = handleOptional2
+    { none: \_ -> runEffectFn1 extractXar1Impl file
+    , one: \dest -> runEffectFn2 extractXar2Impl file dest
+    , two: \(dest /\ flags) -> runEffectFn3 extractXar3Impl file dest flags
+    }
 
-foreign import extractZipImpl :: { file :: FilePath, dest :: Nullable FilePath } -> Effect (Promise (Nullable FilePath))
+foreign import extractZip1Impl :: EffectFn1 FilePath (Promise FilePath)
+
+foreign import extractZip2Impl :: EffectFn2 FilePath FilePath (Promise FilePath)
 
 -- | Extract a zip
-extractZip :: { file :: FilePath, dest :: Maybe FilePath } -> ExceptT Error Aff (Maybe FilePath)
-extractZip { file, dest } =
-  extractZipImpl { file, dest: toNullable dest }
+extractZip :: { file :: FilePath, dest :: Maybe FilePath } -> ExceptT Error Aff FilePath
+extractZip { file, dest: mbDest } =
+  handleOptions
     # toAffE
     # tryActionsM
-    # map toMaybe
+  where
+  handleOptions = case mbDest of
+    Nothing -> runEffectFn1 extractZip1Impl file
+    Just dest -> runEffectFn2 extractZip2Impl file dest
 
-foreign import cacheDirImpl :: { sourceDir :: FilePath, tool :: Tool, version :: String, arch :: Nullable String } -> Effect (Promise (Nullable FilePath))
+foreign import cacheDir3Impl :: EffectFn3 FilePath Tool String (Promise FilePath)
+
+foreign import cacheDir4Impl :: EffectFn4 FilePath Tool String String (Promise FilePath)
 
 -- | Caches a directory and installs it into the tool cacheDir
-cacheDir :: { sourceDir :: String, tool :: Tool, version :: Version, arch :: Maybe String } -> ExceptT Error Aff (Maybe String)
-cacheDir { sourceDir, tool, version, arch } =
-  cacheDirImpl { sourceDir, tool, version: Version.showVersion version, arch: toNullable arch }
+cacheDir :: { sourceDir :: String, tool :: Tool, version :: Version, arch :: Maybe String } -> ExceptT Error Aff FilePath
+cacheDir { sourceDir, tool, version, arch: mbArch } =
+  handleOptions
     # toAffE
     # tryActionsM
-    # map toMaybe
+  where
+  handleOptions = case mbArch of
+    Nothing -> runEffectFn3 cacheDir3Impl sourceDir tool (Version.showVersion version)
+    Just arch -> runEffectFn4 cacheDir4Impl sourceDir tool (Version.showVersion version) arch
 
-foreign import cacheFileImpl :: { sourceFile :: FilePath, targetFile :: FilePath, tool :: Tool, version :: String } -> Effect (Promise (Nullable FilePath))
+foreign import cacheFile4Impl :: EffectFn4 FilePath FilePath Tool String (Promise FilePath)
+
+foreign import cacheFile5Impl :: EffectFn5 FilePath FilePath Tool String String (Promise FilePath)
 
 -- | Caches a downloaded file (GUID) and installs it
 -- | into the tool cache with a given targetName
-cacheFile :: { sourceFile :: FilePath, targetFile :: FilePath, tool :: Tool, version :: Version } -> ExceptT Error Aff FilePath
-cacheFile { sourceFile, targetFile, tool, version } = do
-  mbPath <- map toMaybe $ tryActionsM $ toAffE $ cacheFileImpl { sourceFile, targetFile, tool, version: Version.showVersion version } -- add arch case
-  case mbPath of
-    Nothing -> throwError (error "Failed to cache file")
-    Just path -> pure path
+cacheFile :: { sourceFile :: FilePath, targetFile :: FilePath, tool :: Tool, version :: Version, arch :: Maybe String } -> ExceptT Error Aff FilePath
+cacheFile { sourceFile, targetFile, tool, version, arch: mbArch } =
+  handleOptions
+    # toAffE
+    # tryActionsM
+  where
+  handleOptions = case mbArch of
+    Nothing -> runEffectFn4 cacheFile4Impl sourceFile targetFile tool (Version.showVersion version)
+    Just arch -> runEffectFn5 cacheFile5Impl sourceFile targetFile tool (Version.showVersion version) arch
 
-foreign import findImpl :: { toolName :: Tool, versionSpec :: String, arch :: Nullable String } -> Effect (Nullable FilePath)
+foreign import find2Impl :: EffectFn2 Tool String FilePath
+
+foreign import find3Impl :: EffectFn3 Tool String String FilePath
 
 -- | Finds the path to a tool version in the local installed tool cache
-find :: { toolName :: Tool, versionSpec :: String, arch :: Maybe String } -> ExceptT Error Aff (Maybe FilePath)
-find { toolName, versionSpec, arch } =
-  findImpl { toolName, versionSpec, arch: toNullable arch }
+find :: { toolName :: Tool, versionSpec :: String, arch :: Maybe String } -> ExceptT Error Effect FilePath
+find { toolName, versionSpec, arch: mbArch } =
+  handleOptions
     # liftEffect
-    # tryActionsM
-    # map toMaybe
-    # map (\path -> guard (path /= Just "") *> path)
+    # try >>> ExceptT
+  where
+  handleOptions = case mbArch of
+    Nothing -> runEffectFn2 find2Impl toolName versionSpec
+    Just arch -> runEffectFn3 find3Impl toolName versionSpec arch
 
-foreign import findAllVersionsImpl :: { toolName :: Tool, arch :: Nullable String } -> Effect (Array FilePath)
+foreign import findAllVersions1Impl :: EffectFn1 Tool (Array FilePath)
+
+foreign import findAllVersions2Impl :: EffectFn2 Tool String (Array FilePath)
 
 -- | Finds the paths to all versions of a tool that are installed in the local tool cache
-findAllVersions :: { toolName :: Tool, arch :: Maybe String } -> ExceptT Error Aff (Array FilePath)
-findAllVersions { toolName, arch } =
-  findAllVersionsImpl { toolName, arch: toNullable arch }
+findAllVersions :: { toolName :: Tool, arch :: Maybe String } -> ExceptT Error Effect (Array FilePath)
+findAllVersions { toolName, arch: mbArch } =
+  handleOptions
     # liftEffect
-    # tryActionsM
+    # try >>> ExceptT
+  where
+  handleOptions = case mbArch of
+    Nothing -> runEffectFn1 findAllVersions1Impl toolName
+    Just arch -> runEffectFn2 findAllVersions2Impl toolName arch
 
 type IToolReleaseFile =
   { filename :: String
@@ -195,20 +255,36 @@ fromIToolRelease { version, stable, releaseUrl, files } =
   , files: map fromIToolReleaseFile files
   }
 
-foreign import getManifestFromRepoImpl :: { owner :: String, repo :: String, auth :: Nullable String, branch :: Nullable String } -> Effect (Promise (Array JSIToolRelease))
+foreign import getManifestFromRepo2Impl :: EffectFn2 String String (Promise (Array JSIToolRelease))
 
-getManifestFromRepo :: { owner :: String, repo :: String, auth :: Maybe String, branch :: Maybe String } -> ExceptT Error Aff (Array IToolRelease)
-getManifestFromRepo { owner, repo, auth, branch } =
-  getManifestFromRepoImpl { owner, repo, auth: toNullable auth, branch: toNullable branch }
-    # toAffE
-    # tryActionsM
-    # map (map toIToolRelease)
+foreign import getManifestFromRepo3Impl :: EffectFn3 String String String (Promise (Array JSIToolRelease))
 
-foreign import findFromManifestImpl :: { versionSpec :: String, stable :: Boolean, manifest :: Array JSIToolRelease, archFilter :: Nullable String } -> Effect (Promise (Nullable JSIToolRelease))
+foreign import getManifestFromRepo4Impl :: EffectFn4 String String String String (Promise (Array JSIToolRelease))
+
+getManifestFromRepo :: { owner :: String, repo :: String } -> Optional2 String String -> ExceptT Error Aff (Array IToolRelease)
+getManifestFromRepo { owner, repo } =
+  handleOptions
+    >>> toAffE
+    >>> tryActionsM
+    >>> map (map toIToolRelease)
+  where
+  handleOptions = handleOptional2
+    { none: \_ -> runEffectFn2 getManifestFromRepo2Impl owner repo
+    , one: \auth -> runEffectFn3 getManifestFromRepo3Impl owner repo auth
+    , two: \(auth /\ branch) -> runEffectFn4 getManifestFromRepo4Impl owner repo auth branch
+    }
+
+foreign import findFromManifest3Impl :: EffectFn3 String Boolean (Array JSIToolRelease) (Promise (Nullable JSIToolRelease))
+
+foreign import findFromManifest4Impl :: EffectFn4 String Boolean (Array JSIToolRelease) String (Promise (Nullable JSIToolRelease))
 
 findFromManifest :: { versionSpec :: String, stable :: Boolean, manifest :: Array IToolRelease, archFilter :: Maybe String } -> ExceptT Error Aff (Maybe IToolRelease)
-findFromManifest { versionSpec, stable, manifest, archFilter } =
-  findFromManifestImpl { versionSpec, stable, manifest: map fromIToolRelease manifest, archFilter: toNullable archFilter }
+findFromManifest { versionSpec, stable, manifest, archFilter: mbArchFilter } =
+  handleOptions
     # toAffE
     # tryActionsM
     # map (toMaybe >>> map toIToolRelease)
+  where
+  handleOptions = case mbArchFilter of
+    Nothing -> runEffectFn3 findFromManifest3Impl versionSpec stable (map fromIToolRelease manifest)
+    Just archFilter -> runEffectFn4 findFromManifest4Impl versionSpec stable (map fromIToolRelease manifest) archFilter
