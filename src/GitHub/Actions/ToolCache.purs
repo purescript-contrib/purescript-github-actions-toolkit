@@ -22,7 +22,7 @@ import Control.Monad.Error.Class (try)
 import Control.Monad.Except.Trans (ExceptT(..))
 import Control.MonadPlus (guard)
 import Control.Promise (Promise, toAffE)
-import Data.Maybe (Maybe(..))
+import Data.Maybe (Maybe)
 import Data.Nullable (Nullable, toMaybe, toNullable)
 import Data.Version (Version)
 import Data.Version as Version
@@ -124,47 +124,56 @@ foreign import extractZip1Impl :: EffectFn1 FilePath (Promise FilePath)
 
 foreign import extractZip2Impl :: EffectFn2 FilePath FilePath (Promise FilePath)
 
+type ExtractZipArgs = Optional1 ( file :: FilePath ) "dest" FilePath
+
 -- | Extract a zip
-extractZip :: { file :: FilePath, dest :: Maybe FilePath } -> ExceptT Error Aff FilePath
-extractZip { file, dest: mbDest } =
+extractZip :: ExtractZipArgs -> ExceptT Error Aff FilePath
+extractZip =
   handleOptions
-    # toAffE
-    # tryActionsM
+    >>> toAffE
+    >>> tryActionsM
   where
-  handleOptions = case mbDest of
-    Nothing -> runEffectFn1 extractZip1Impl file
-    Just dest -> runEffectFn2 extractZip2Impl file dest
+  handleOptions = handleOptional1
+    { none: \{ file } -> runEffectFn1 extractZip1Impl file
+    , one: \{ file, dest } -> runEffectFn2 extractZip2Impl file dest
+    }
 
 foreign import cacheDir3Impl :: EffectFn3 FilePath Tool String (Promise FilePath)
 
 foreign import cacheDir4Impl :: EffectFn4 FilePath Tool String String (Promise FilePath)
 
+type CacheDirArgs = Optional1 ( sourceDir :: String, tool :: Tool, version :: Version ) "arch" String
+
 -- | Caches a directory and installs it into the tool cacheDir
-cacheDir :: { sourceDir :: String, tool :: Tool, version :: Version, arch :: Maybe String } -> ExceptT Error Aff FilePath
-cacheDir { sourceDir, tool, version, arch: mbArch } =
+cacheDir :: CacheDirArgs -> ExceptT Error Aff FilePath
+cacheDir =
   handleOptions
-    # toAffE
-    # tryActionsM
+    >>> toAffE
+    >>> tryActionsM
   where
-  handleOptions = case mbArch of
-    Nothing -> runEffectFn3 cacheDir3Impl sourceDir tool (Version.showVersion version)
-    Just arch -> runEffectFn4 cacheDir4Impl sourceDir tool (Version.showVersion version) arch
+  handleOptions = handleOptional1
+    { none: \{ sourceDir, tool, version } -> runEffectFn3 cacheDir3Impl sourceDir tool (Version.showVersion version)
+    , one: \{ sourceDir, tool, version, arch } -> runEffectFn4 cacheDir4Impl sourceDir tool (Version.showVersion version) arch
+    }
 
 foreign import cacheFile4Impl :: EffectFn4 FilePath FilePath Tool String (Promise FilePath)
 
 foreign import cacheFile5Impl :: EffectFn5 FilePath FilePath Tool String String (Promise FilePath)
 
+type CacheFileArgs = Optional1 ( sourceFile :: FilePath, targetFile :: FilePath, tool :: Tool, version :: Version ) "arch" String
+
 -- | Caches a downloaded file (GUID) and installs it
 -- | into the tool cache with a given targetName
-cacheFile :: { sourceFile :: FilePath, targetFile :: FilePath, tool :: Tool, version :: Version, arch :: Maybe String } -> ExceptT Error Aff FilePath
-cacheFile { sourceFile, targetFile, tool, version, arch: mbArch } =
+cacheFile :: CacheFileArgs -> ExceptT Error Aff FilePath
+cacheFile =
   handleOptions
-    # toAffE
-    # tryActionsM
+    >>> toAffE
+    >>> tryActionsM
   where
-  handleOptions = case mbArch of
-    Nothing -> runEffectFn4 cacheFile4Impl sourceFile targetFile tool (Version.showVersion version)
-    Just arch -> runEffectFn5 cacheFile5Impl sourceFile targetFile tool (Version.showVersion version) arch
+  handleOptions = handleOptional1
+    { none: \{ sourceFile, targetFile, tool, version } -> runEffectFn4 cacheFile4Impl sourceFile targetFile tool (Version.showVersion version)
+    , one: \{ sourceFile, targetFile, tool, version, arch } -> runEffectFn5 cacheFile5Impl sourceFile targetFile tool (Version.showVersion version) arch
+    }
 
 foreign import find2Impl :: EffectFn2 Tool String FilePath
 
@@ -292,13 +301,16 @@ foreign import findFromManifest3Impl :: EffectFn3 String Boolean (Array JSIToolR
 
 foreign import findFromManifest4Impl :: EffectFn4 String Boolean (Array JSIToolRelease) String (Promise (Nullable JSIToolRelease))
 
-findFromManifest :: { versionSpec :: String, stable :: Boolean, manifest :: Array IToolRelease, archFilter :: Maybe String } -> ExceptT Error Aff (Maybe IToolRelease)
-findFromManifest { versionSpec, stable, manifest, archFilter: mbArchFilter } =
+type FindFromManifestArgs = Optional1 ( versionSpec :: String, stable :: Boolean, manifest :: Array IToolRelease ) "archFilter" String
+
+findFromManifest :: FindFromManifestArgs -> ExceptT Error Aff (Maybe IToolRelease)
+findFromManifest =
   handleOptions
-    # toAffE
-    # tryActionsM
-    # map (toMaybe >>> map toIToolRelease)
+    >>> toAffE
+    >>> tryActionsM
+    >>> map (toMaybe >>> map toIToolRelease)
   where
-  handleOptions = case mbArchFilter of
-    Nothing -> runEffectFn3 findFromManifest3Impl versionSpec stable (map fromIToolRelease manifest)
-    Just archFilter -> runEffectFn4 findFromManifest4Impl versionSpec stable (map fromIToolRelease manifest) archFilter
+  handleOptions = handleOptional1
+    { none: \{ versionSpec, stable, manifest } -> runEffectFn3 findFromManifest3Impl versionSpec stable (map fromIToolRelease manifest)
+    , one: \{ versionSpec, stable, manifest, archFilter } -> runEffectFn4 findFromManifest4Impl versionSpec stable (map fromIToolRelease manifest) archFilter
+    }
