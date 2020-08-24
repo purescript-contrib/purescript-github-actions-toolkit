@@ -17,6 +17,7 @@ You can edit this file as you like.
   , "psci-support"
   , "transformers"
   , "tuples"
+  , "typelevel-prelude"
   , "variant"
   , "versions"
   ]

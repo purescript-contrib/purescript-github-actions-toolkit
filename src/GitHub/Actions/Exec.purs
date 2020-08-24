@@ -12,7 +12,6 @@ import Control.Monad.Except.Trans (ExceptT)
 import Control.Promise (Promise, toAffE)
 import Data.Maybe (Maybe)
 import Data.Nullable (Nullable, toNullable)
-import Data.Tuple.Nested ((/\))
 import Effect (Effect)
 import Effect.Aff (Aff)
 import Effect.Exception (Error)
@@ -109,25 +108,24 @@ toJSExecListeners
   , debug: toNullable $ map mkEffectFn1 debug
   }
 
-foreign import exec1Impl :: EffectFn1 String (Promise Number) -- (Array String) (Nullable JSExecOptions) (Promise Number)
+foreign import exec1Impl :: EffectFn1 String (Promise Number)
 
 foreign import exec2Impl :: EffectFn2 String (Array String) (Promise Number)
 
 foreign import exec3Impl :: EffectFn3 String (Array String) JSExecOptions (Promise Number)
 
+type ExecArgs = Optional2 ( command :: String ) "args" (Array String) "options" ExecOptions
+
 -- | Executes a command on the command line, with arguments
-exec
-  :: String
-  -> Optional2 (Array String) ExecOptions
-  -> ExceptT Error Aff { succeeded :: Boolean }
-exec command =
+exec :: ExecArgs -> ExceptT Error Aff { succeeded :: Boolean }
+exec =
   handleOptionals
     >>> toAffE
     >>> tryActionsM
     >>> map ((_ == 0.0) >>> { succeeded: _ })
   where
   handleOptionals = handleOptional2
-    { none: \_ -> runEffectFn1 exec1Impl command
-    , one: \args -> runEffectFn2 exec2Impl command args
-    , two: \(args /\ options) -> runEffectFn3 exec3Impl command args (toJSExecOptions options)
+    { none: \{ command } -> runEffectFn1 exec1Impl command
+    , one: \{ command, args } -> runEffectFn2 exec2Impl command args
+    , two: \{ command, args, options } -> runEffectFn3 exec3Impl command args (toJSExecOptions options)
     }
