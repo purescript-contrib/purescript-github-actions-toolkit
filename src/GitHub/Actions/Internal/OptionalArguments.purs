@@ -46,10 +46,9 @@ mkOptionalNone
 mkOptionalNone = inj _none
 
 mkOptionalOne
-  :: forall v symA a r rl
-   . ListToRow (RL.Cons symA a r) rl
-  => Record rl
-  -> Variant ( one :: Record rl | v )
+  :: forall r v
+   . Record r
+  -> Variant ( one :: Record r | v )
 mkOptionalOne = inj _one
 
 mkOptionalTwo
