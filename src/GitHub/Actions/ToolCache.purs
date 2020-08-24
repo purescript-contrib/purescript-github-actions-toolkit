@@ -20,6 +20,7 @@ import Prelude
 
 import Control.Monad.Error.Class (try)
 import Control.Monad.Except.Trans (ExceptT(..))
+import Control.MonadPlus (guard)
 import Control.Promise (Promise, toAffE)
 import Data.Maybe (Maybe(..))
 import Data.Nullable (Nullable, toMaybe, toNullable)
@@ -166,11 +167,12 @@ foreign import find2Impl :: EffectFn2 Tool String FilePath
 foreign import find3Impl :: EffectFn3 Tool String String FilePath
 
 -- | Finds the path to a tool version in the local installed tool cache
-find :: { toolName :: Tool, versionSpec :: String, arch :: Maybe String } -> ExceptT Error Effect FilePath
+find :: { toolName :: Tool, versionSpec :: String, arch :: Maybe String } -> ExceptT Error Effect (Maybe FilePath)
 find { toolName, versionSpec, arch: mbArch } =
   handleOptions
     # liftEffect
     # try >>> ExceptT
+    # map (\path -> guard (path /= "") $> path)
   where
   handleOptions = case mbArch of
     Nothing -> runEffectFn2 find2Impl toolName versionSpec
