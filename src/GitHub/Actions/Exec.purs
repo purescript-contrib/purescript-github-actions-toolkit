@@ -2,6 +2,7 @@
 -- | https://github.com/actions/toolkit/tree/main/packages/exec
 module GitHub.Actions.Exec
   ( exec
+  , ExecArgs
   , ExecOptions
   , ExecListeners
   ) where

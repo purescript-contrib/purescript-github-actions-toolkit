@@ -2,16 +2,27 @@
 -- | https://github.com/actions/toolkit/tree/main/packages/tool-cache
 module GitHub.Actions.ToolCache
   ( downloadTool
+  , DownloadToolArgs
   , extract7c
+  , Extract7cArgs
   , extractTar
+  , ExtractTarArgs
   , extractXar
+  , ExtractXarArgs
   , extractZip
+  , ExtractZipArgs
   , cacheDir
+  , CacheDirArgs
   , cacheFile
+  , CacheFileArgs
   , find
+  , FindArgs
   , findAllVersions
+  , FindAllVersionsArgs
   , getManifestFromRepo
+  , GetManifestFromRepoArgs
   , findFromManifest
+  , FindFromManifestArgs
   , IToolRelease
   , IToolReleaseFile
   ) where
