@@ -39,8 +39,11 @@ _one = SProxy :: SProxy "one"
 _two = SProxy :: SProxy "two"
 _three = SProxy :: SProxy "three"
 
-mkOptionalNone :: forall v. Variant ( none :: Unit | v )
-mkOptionalNone = inj _none unit
+mkOptionalNone
+  :: forall v r
+   . Record r
+  -> Variant ( none :: Record r | v )
+mkOptionalNone = inj _none
 
 mkOptionalOne
   :: forall v symA a r rl
