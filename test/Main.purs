@@ -2,19 +2,19 @@ module Test.Main where
 
 import Prelude
 
-import Control.Monad.Except.Trans (ExceptT)
 import Effect (Effect)
-import Effect.Aff (Aff)
 import Effect.Class.Console (log)
-import Effect.Exception (Error)
-import GitHub.Actions.OptionalArguments (class Optional1', Optional1'', requiredWithOne)
-import GitHub.Actions.ToolCache as ToolCache
-import Node.Path (FilePath)
+import GitHub.Actions.OptionalArguments (Optional1, Optional2, Optional3, Required, handleOptional1, handleRequired, specifyOne, specifyRequired, specifyThree, specifyTwo)
 
 type Test1Args = Required ( a :: String, b :: Int )
 
 test1 :: Test1Args
 test1 = specifyRequired { a: "hello", b: 100000 }
+
+test1Output :: String
+test1Output = test1 # handleRequired
+  { required: \{ a, b } -> a <> show b
+  }
 
 type Test2Args = Optional1 ( a :: String ) "b" String
 
@@ -23,6 +23,17 @@ test2 = specifyRequired { a: "hello" }
 
 test2' :: Test2Args
 test2' = specifyOne { a: "hello", b: "bye" }
+
+handleTest2 =
+  { required: \{ a } -> a
+  , specifyOne: \{ a, b } -> a <> b
+  }
+
+test2Output :: String
+test2Output = handleOptional1 handleTest2 test2
+
+test2Output' :: String
+test2Output' = handleOptional1 handleTest2 test2
 
 type Test3Args = Optional2 ( a :: String ) "b" String "c" String
 

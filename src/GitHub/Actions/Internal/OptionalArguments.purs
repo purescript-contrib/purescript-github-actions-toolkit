@@ -65,3 +65,33 @@ _specifyThree = SProxy :: SProxy "specifyThree"
 
 handleRequired :: forall r o. { required :: Record r -> o } -> Required r -> o
 handleRequired elim (Required r) = match elim r
+
+handleOptional1
+  :: forall required symA typA all rl o
+   . RL.RowToList required rl
+  => ListToRow (RL.Cons symA typA rl) all
+  => { required :: Record required -> o, specifyOne :: Record all -> o }
+  -> Optional1 required symA typA
+  -> o
+handleOptional1 elim (Optional1 optional) = match elim optional
+
+handleOptional2
+  :: forall required symA typA symB typB one two rl o
+   . RL.RowToList required rl
+  => ListToRow (RL.Cons symA typA rl) one
+  => ListToRow (RL.Cons symA typA (RL.Cons symB typB rl)) two
+  => { required :: Record required -> o, specifyOne :: Record one -> o, specifyTwo :: Record two -> o}
+  -> Optional2 required symA typA symB typB
+  -> o
+handleOptional2 elim (Optional2 optional) = match elim optional
+
+handleOptional3
+  :: forall required symA typA symB typB symC typC one two three rl o
+   . RL.RowToList required rl
+  => ListToRow (RL.Cons symA typA rl) one
+  => ListToRow (RL.Cons symA typA (RL.Cons symB typB rl)) two
+  => ListToRow (RL.Cons symA typA (RL.Cons symB typB (RL.Cons symC typC rl))) three
+  => { required :: Record required -> o, specifyOne :: Record one -> o, specifyTwo :: Record two -> o, specifyThree :: Record three -> o }
+  -> Optional3 required symA typA symB typB symC typC
+  -> o
+handleOptional3 elim (Optional3 optional) = match elim optional
