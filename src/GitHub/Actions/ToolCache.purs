@@ -35,6 +35,7 @@ import Control.MonadPlus (guard)
 import Control.Promise (Promise, toAffE)
 import Data.Maybe (Maybe)
 import Data.Nullable (Nullable, toMaybe, toNullable)
+import Data.Variant (Variant, match)
 import Data.Version (Version)
 import Data.Version as Version
 import Effect (Effect)
@@ -42,7 +43,7 @@ import Effect.Aff (Aff)
 import Effect.Class (liftEffect)
 import Effect.Exception (Error)
 import Effect.Uncurried (EffectFn1, EffectFn2, EffectFn3, EffectFn4, EffectFn5, runEffectFn1, runEffectFn2, runEffectFn3, runEffectFn4, runEffectFn5)
-import GitHub.Actions.OptionalArguments (Optional2, Optional1, handleOptional1, handleOptional2)
+import GitHub.Actions.OptionalArguments (Optional1, Optional2, handleOptional1, handleOptional2)
 import GitHub.Actions.Types (Tool)
 import GitHub.Actions.Utils (tryActionsM)
 import Node.Path (FilePath)
@@ -135,7 +136,7 @@ foreign import extractZip1Impl :: EffectFn1 FilePath (Promise FilePath)
 
 foreign import extractZip2Impl :: EffectFn2 FilePath FilePath (Promise FilePath)
 
-type ExtractZipArgs = Optional1 ( file :: FilePath ) "dest" FilePath
+type ExtractZipArgs = Variant ( none :: { file :: FilePath }, one :: { file :: FilePath, dest :: FilePath })--Optional1'' ( file :: FilePath ) "dest" FilePath ( file :: FilePath, dest :: FilePath )
 
 -- | Extract a zip
 extractZip :: ExtractZipArgs -> ExceptT Error Aff FilePath
@@ -144,7 +145,7 @@ extractZip =
     >>> toAffE
     >>> tryActionsM
   where
-  handleOptions = handleOptional1
+  handleOptions = match
     { none: \{ file } -> runEffectFn1 extractZip1Impl file
     , one: \{ file, dest } -> runEffectFn2 extractZip2Impl file dest
     }
