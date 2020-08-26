@@ -120,13 +120,13 @@ type ExecArgs = Optional2 ( command :: String ) "args" (Array String) "options" 
 -- | Executes a command on the command line, with arguments
 exec :: ExecArgs -> ExceptT Error Aff { succeeded :: Boolean }
 exec =
-  handleOptionals
+  handleOptions
     >>> toAffE
     >>> tryActionsM
     >>> map ((_ == 0.0) >>> { succeeded: _ })
   where
-  handleOptionals = handleOptional2
-    { none: \{ command } -> runEffectFn1 exec1Impl command
-    , one: \{ command, args } -> runEffectFn2 exec2Impl command args
-    , two: \{ command, args, options } -> runEffectFn3 exec3Impl command args (toJSExecOptions options)
+  handleOptions = handleOptional2
+    { required: \{ command } -> runEffectFn1 exec1Impl command
+    , specifyOne: \{ command, args } -> runEffectFn2 exec2Impl command args
+    , specifyTwo: \{ command, args, options } -> runEffectFn3 exec3Impl command args (toJSExecOptions options)
     }

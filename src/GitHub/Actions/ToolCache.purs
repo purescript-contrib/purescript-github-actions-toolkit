@@ -35,7 +35,6 @@ import Control.MonadPlus (guard)
 import Control.Promise (Promise, toAffE)
 import Data.Maybe (Maybe)
 import Data.Nullable (Nullable, toMaybe, toNullable)
-import Data.Variant (Variant, match)
 import Data.Version (Version)
 import Data.Version as Version
 import Effect (Effect)
@@ -64,12 +63,12 @@ downloadTool =
     >>> tryActionsM
   where
   handleOptional = handleOptional2
-    { none: \{ url } -> runEffectFn1 downloadTool1Impl url
-    , one: \{ url, dest } -> runEffectFn2 downloadTool2Impl url dest
-    , two: \{ url, dest, auth } -> runEffectFn3 downloadTool3Impl url dest auth
+    { required: \{ url } -> runEffectFn1 downloadTool1Impl url
+    , specifyOne: \{ url, dest } -> runEffectFn2 downloadTool2Impl url dest
+    , specifyTwo: \{ url, dest, auth } -> runEffectFn3 downloadTool3Impl url dest auth
     }
 
-foreign import extract7c1Impl :: EffectFn1 FilePath (Promise FilePath) -- { file :: FilePath, dest :: Nullable FilePath, _7zPath :: Nullable String } -> Effect (Promise (Nullable String))
+foreign import extract7c1Impl :: EffectFn1 FilePath (Promise FilePath)
 
 foreign import extract7c2Impl :: EffectFn2 FilePath FilePath (Promise FilePath)
 
@@ -85,9 +84,9 @@ extract7c =
     >>> tryActionsM
   where
   handleOptional = handleOptional2
-    { none: \{ file } -> runEffectFn1 extract7c1Impl file
-    , one: \{ file, dest } -> runEffectFn2 extract7c2Impl file dest
-    , two: \{ file, dest, _7cPath } -> runEffectFn3 extract7c3Impl file dest _7cPath
+    { required: \{ file } -> runEffectFn1 extract7c1Impl file
+    , specifyOne: \{ file, dest } -> runEffectFn2 extract7c2Impl file dest
+    , specifyTwo: \{ file, dest, _7cPath } -> runEffectFn3 extract7c3Impl file dest _7cPath
     }
 
 foreign import extractTar1Impl :: EffectFn1 FilePath (Promise FilePath)
@@ -106,9 +105,9 @@ extractTar =
     >>> tryActionsM
   where
   handleOptional = handleOptional2
-    { none: \{ file } -> runEffectFn1 extractTar1Impl file
-    , one: \{ file, dest } -> runEffectFn2 extractTar2Impl file dest
-    , two: \{ file, dest, flags } -> runEffectFn3 extractTar3Impl file dest flags
+    { required: \{ file } -> runEffectFn1 extractTar1Impl file
+    , specifyOne: \{ file, dest } -> runEffectFn2 extractTar2Impl file dest
+    , specifyTwo: \{ file, dest, flags } -> runEffectFn3 extractTar3Impl file dest flags
     }
 
 foreign import extractXar1Impl :: EffectFn1 FilePath (Promise FilePath)
@@ -127,16 +126,16 @@ extractXar =
     >>> tryActionsM
   where
   handleOptional = handleOptional2
-    { none: \{ file } -> runEffectFn1 extractXar1Impl file
-    , one: \{ file, dest } -> runEffectFn2 extractXar2Impl file dest
-    , two: \{ file, dest, flags } -> runEffectFn3 extractXar3Impl file dest flags
+    { required: \{ file } -> runEffectFn1 extractXar1Impl file
+    , specifyOne: \{ file, dest } -> runEffectFn2 extractXar2Impl file dest
+    , specifyTwo: \{ file, dest, flags } -> runEffectFn3 extractXar3Impl file dest flags
     }
 
 foreign import extractZip1Impl :: EffectFn1 FilePath (Promise FilePath)
 
 foreign import extractZip2Impl :: EffectFn2 FilePath FilePath (Promise FilePath)
 
-type ExtractZipArgs = Variant ( none :: { file :: FilePath }, one :: { file :: FilePath, dest :: FilePath })--Optional1'' ( file :: FilePath ) "dest" FilePath ( file :: FilePath, dest :: FilePath )
+type ExtractZipArgs = Optional1 ( file :: FilePath ) "dest" FilePath
 
 -- | Extract a zip
 extractZip :: ExtractZipArgs -> ExceptT Error Aff FilePath
@@ -145,9 +144,9 @@ extractZip =
     >>> toAffE
     >>> tryActionsM
   where
-  handleOptions = match
-    { none: \{ file } -> runEffectFn1 extractZip1Impl file
-    , one: \{ file, dest } -> runEffectFn2 extractZip2Impl file dest
+  handleOptions = handleOptional1
+    { required: \{ file } -> runEffectFn1 extractZip1Impl file
+    , specifyOne: \{ file, dest } -> runEffectFn2 extractZip2Impl file dest
     }
 
 foreign import cacheDir3Impl :: EffectFn3 FilePath Tool String (Promise FilePath)
@@ -164,8 +163,8 @@ cacheDir =
     >>> tryActionsM
   where
   handleOptions = handleOptional1
-    { none: \{ sourceDir, tool, version } -> runEffectFn3 cacheDir3Impl sourceDir tool (Version.showVersion version)
-    , one: \{ sourceDir, tool, version, arch } -> runEffectFn4 cacheDir4Impl sourceDir tool (Version.showVersion version) arch
+    { required: \{ sourceDir, tool, version } -> runEffectFn3 cacheDir3Impl sourceDir tool (Version.showVersion version)
+    , specifyOne: \{ sourceDir, tool, version, arch } -> runEffectFn4 cacheDir4Impl sourceDir tool (Version.showVersion version) arch
     }
 
 foreign import cacheFile4Impl :: EffectFn4 FilePath FilePath Tool String (Promise FilePath)
@@ -183,8 +182,8 @@ cacheFile =
     >>> tryActionsM
   where
   handleOptions = handleOptional1
-    { none: \{ sourceFile, targetFile, tool, version } -> runEffectFn4 cacheFile4Impl sourceFile targetFile tool (Version.showVersion version)
-    , one: \{ sourceFile, targetFile, tool, version, arch } -> runEffectFn5 cacheFile5Impl sourceFile targetFile tool (Version.showVersion version) arch
+    { required: \{ sourceFile, targetFile, tool, version } -> runEffectFn4 cacheFile4Impl sourceFile targetFile tool (Version.showVersion version)
+    , specifyOne: \{ sourceFile, targetFile, tool, version, arch } -> runEffectFn5 cacheFile5Impl sourceFile targetFile tool (Version.showVersion version) arch
     }
 
 foreign import find2Impl :: EffectFn2 Tool String FilePath
@@ -202,8 +201,8 @@ find =
     >>> map (\path -> guard (path /= "") $> path)
   where
   handleOptions = handleOptional1
-    { none: \{ toolName, versionSpec } -> runEffectFn2 find2Impl toolName versionSpec
-    , one: \{ toolName, versionSpec, arch } -> runEffectFn3 find3Impl toolName versionSpec arch
+    { required: \{ toolName, versionSpec } -> runEffectFn2 find2Impl toolName versionSpec
+    , specifyOne: \{ toolName, versionSpec, arch } -> runEffectFn3 find3Impl toolName versionSpec arch
     }
 
 foreign import findAllVersions1Impl :: EffectFn1 Tool (Array FilePath)
@@ -220,8 +219,8 @@ findAllVersions =
     >>> (try >>> ExceptT)
   where
   handleOptions = handleOptional1
-    { none: \{ toolName } -> runEffectFn1 findAllVersions1Impl toolName
-    , one: \{ toolName, arch } -> runEffectFn2 findAllVersions2Impl toolName arch
+    { required: \{ toolName } -> runEffectFn1 findAllVersions1Impl toolName
+    , specifyOne: \{ toolName, arch } -> runEffectFn2 findAllVersions2Impl toolName arch
     }
 
 type IToolReleaseFile =
@@ -304,9 +303,9 @@ getManifestFromRepo =
     >>> map (map toIToolRelease)
   where
   handleOptions = handleOptional2
-    { none: \{ owner, repo } -> runEffectFn2 getManifestFromRepo2Impl owner repo
-    , one: \{ owner, repo, auth } -> runEffectFn3 getManifestFromRepo3Impl owner repo auth
-    , two: \{ owner, repo, auth, branch } -> runEffectFn4 getManifestFromRepo4Impl owner repo auth branch
+    { required: \{ owner, repo } -> runEffectFn2 getManifestFromRepo2Impl owner repo
+    , specifyOne: \{ owner, repo, auth } -> runEffectFn3 getManifestFromRepo3Impl owner repo auth
+    , specifyTwo: \{ owner, repo, auth, branch } -> runEffectFn4 getManifestFromRepo4Impl owner repo auth branch
     }
 
 foreign import findFromManifest3Impl :: EffectFn3 String Boolean (Array JSIToolRelease) (Promise (Nullable JSIToolRelease))
@@ -323,6 +322,6 @@ findFromManifest =
     >>> map (toMaybe >>> map toIToolRelease)
   where
   handleOptions = handleOptional1
-    { none: \{ versionSpec, stable, manifest } -> runEffectFn3 findFromManifest3Impl versionSpec stable (map fromIToolRelease manifest)
-    , one: \{ versionSpec, stable, manifest, archFilter } -> runEffectFn4 findFromManifest4Impl versionSpec stable (map fromIToolRelease manifest) archFilter
+    { required: \{ versionSpec, stable, manifest } -> runEffectFn3 findFromManifest3Impl versionSpec stable (map fromIToolRelease manifest)
+    , specifyOne: \{ versionSpec, stable, manifest, archFilter } -> runEffectFn4 findFromManifest4Impl versionSpec stable (map fromIToolRelease manifest) archFilter
     }
