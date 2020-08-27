@@ -22,6 +22,7 @@ newtype Optional2 required symA typA symB typB =
 newtype Optional3 required symA typA symB typB symC typC =
   Optional3 (forall one two three. Row.Cons symA typA required one => Row.Cons symB typB one two => Row.Cons symC typC two three => Variant ( required :: Record required, specifyOne :: Record one, specifyTwo :: Record two, specifyThree :: Record three ))
 
+-- | Specify only the required arguments
 class SpecifyRequired required t | t -> required where
   specifyRequired :: Record required -> t
 
@@ -52,6 +53,7 @@ else instance specifyRequiredFailOptional3
   => SpecifyRequired given (Optional3 r symA typA symB typB symC typC) where
   specifyRequired given = unsafeCrashWith "This shouldn't happen."
 
+-- | Specify the required arguments and the first optional argument
 class SpecifyOne required symA typA t | t -> required symA typA where
   specifyOne :: forall one. Row.Cons symA typA required one => Record one -> t
 
@@ -64,6 +66,7 @@ else instance specifyOneOptional2 :: SpecifyOne required symA typA (Optional2 re
 else instance specifyOneOption3 :: SpecifyOne required symA typA (Optional3 required symA typA symB typB symC typC) where
   specifyOne given = Optional3 (inj _specifyOne (unsafeCoerce given))
 
+-- | Specify the required arguments and the first two optional arguments
 class SpecifyTwo required symA typA symB typB t | t -> required symA typA symB typB where
   specifyTwo :: forall one two. Row.Cons symA typA required one => Row.Cons symB typB one two => Record two -> t
 
@@ -73,6 +76,7 @@ instance specifyTwoOptional2 :: SpecifyTwo required symA typA symB typB (Optiona
 else instance specifyTwoOptional3 :: SpecifyTwo required symA typA symB typB (Optional3 required symA typA symB typB symC typC) where
   specifyTwo given = Optional3 (inj _specifyTwo (unsafeCoerce given))
 
+-- | Specify the required arguments and the first three optional arguments
 class SpecifyThree required symA typA symB typB symC typC t | t -> required symA typA symB typB symC typC where
   specifyThree :: forall one two three. Row.Cons symA typA required one => Row.Cons symB typB one two => Row.Cons symC typC two three => Record three -> t
 
