@@ -30,7 +30,7 @@ import Effect (Effect)
 import Effect.Aff (Aff)
 import Effect.Exception (Error)
 import Effect.Uncurried (EffectFn1, EffectFn2, runEffectFn1, runEffectFn2)
-import GitHub.Actions.OptionalArguments (Optional1, handleOptional1)
+import GitHub.Actions.Arguments.Optional (Optional1, handleOptional1)
 
 -- | Interface for getInput options
 type InputOptions =
