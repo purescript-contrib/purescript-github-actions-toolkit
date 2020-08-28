@@ -1,6 +1,13 @@
 -- | Exports functions from the @actions/cache module provided by GitHub
 -- | https://github.com/actions/toolkit/tree/main/packages/cache
-module GitHub.Actions.Cache where
+module GitHub.Actions.Cache
+  ( DownloadOptions
+  , RestoreCacheArgs
+  , SaveCacheArgs
+  , UploadOptions
+  , restoreCache
+  , saveCache
+  ) where
 
 import Prelude
 
