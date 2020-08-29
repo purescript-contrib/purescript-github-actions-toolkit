@@ -1,6 +1,19 @@
 -- | Exports functions from the @actions/io module provided by GitHub
 -- | https://github.com/actions/toolkit/tree/main/packages/io
-module GitHub.Actions.IO where
+module GitHub.Actions.IO
+  ( CopyOptions
+  , MoveOptions
+  , mv
+  , MvArgs
+  , cp
+  , CpArgs
+  , mkdirP
+  , MkdirPArgs
+  , which
+  , WhichArgs
+  , rmRF
+  , RmRFArgs
+  ) where
 
 import Prelude
 
