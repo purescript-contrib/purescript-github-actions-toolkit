@@ -20,13 +20,11 @@ import Prelude
 import Control.Monad.Error.Class (try)
 import Control.Monad.Except.Trans (ExceptT(..), throwError)
 import Control.Promise (Promise, toAffE)
-import Data.Maybe (Maybe)
+import Data.Maybe (Maybe(..))
 import Data.Nullable (Nullable, toNullable)
 import Effect.Aff (Aff)
 import Effect.Exception (Error, error)
 import Effect.Uncurried (EffectFn1, EffectFn2, EffectFn3, runEffectFn1, runEffectFn2, runEffectFn3)
-import GitHub.Actions.Arguments.Optional (Optional1, Required, handleOptional1, handleRequired)
-import GitHub.Actions.Types (Tool)
 import Node.Path (FilePath)
 
 type CopyOptions =
@@ -64,7 +62,11 @@ foreign import cp2Impl :: EffectFn2 String String (Promise VoidReturn)
 
 foreign import cp3Impl :: EffectFn3 String String JSCopyOptions (Promise VoidReturn)
 
-type CpArgs = Optional1 ( source :: FilePath, dest :: FilePath ) "options" CopyOptions
+type CpArgs =
+  { source :: FilePath
+  , dest :: FilePath
+  , options :: Maybe CopyOptions
+  }
 
 cp :: CpArgs -> ExceptT Error Aff Unit
 cp =
@@ -73,16 +75,19 @@ cp =
     >>> (try >>> ExceptT)
     >>> void
   where
-  handleOptions = handleOptional1
-    { required: \{ source, dest } -> runEffectFn2 cp2Impl source dest
-    , specifyOne: \{ source, dest, options } -> runEffectFn3 cp3Impl source dest (toJSCopyOptions options)
-    }
+  handleOptions { source, dest, options } = case options of
+    Nothing -> runEffectFn2 cp2Impl source dest
+    Just o -> runEffectFn3 cp3Impl source dest (toJSCopyOptions o)
 
 foreign import mv2Impl :: EffectFn2 String String (Promise VoidReturn)
 
 foreign import mv3Impl :: EffectFn3 String String JSMoveOptions (Promise VoidReturn)
 
-type MvArgs = Optional1 ( source :: FilePath, dest :: FilePath ) "options" MoveOptions
+type MvArgs =
+  { source :: FilePath
+  , dest :: FilePath
+  , options :: Maybe MoveOptions
+  }
 
 mv :: MvArgs -> ExceptT Error Aff Unit
 mv =
@@ -91,46 +96,44 @@ mv =
     >>> (try >>> ExceptT)
     >>> void
   where
-  handleOptions = handleOptional1
-    { required: \{ source, dest } -> runEffectFn2 mv2Impl source dest
-    , specifyOne: \{ source, dest, options } -> runEffectFn3 mv3Impl source dest (toJSMoveOptions options)
-    }
+  handleOptions { source, dest, options } = case options of
+    Nothing -> runEffectFn2 mv2Impl source dest
+    Just o -> runEffectFn3 mv3Impl source dest (toJSMoveOptions o)
 
 foreign import rmRFImpl :: EffectFn1 String (Promise VoidReturn)
 
-type RmRFArgs = Required ( inputPath :: FilePath )
+type RmRFArgs =
+  { inputPath :: FilePath
+  }
 
 rmRF :: RmRFArgs -> ExceptT Error Aff Unit
-rmRF =
-  handleOptions
-    >>> toAffE
-    >>> (try >>> ExceptT)
-    >>> void
-  where
-  handleOptions = handleRequired
-    { required: \{ inputPath } -> runEffectFn1 rmRFImpl inputPath
-    }
+rmRF { inputPath } =
+  runEffectFn1 rmRFImpl inputPath
+    # toAffE
+    # (try >>> ExceptT)
+    # void
 
 foreign import mkdirPImpl :: EffectFn1 String (Promise VoidReturn)
 
-type MkdirPArgs = Required ( fsPath :: FilePath )
+type MkdirPArgs =
+  { fsPath :: FilePath
+  }
 
 mkdirP :: MkdirPArgs -> ExceptT Error Aff Unit
-mkdirP =
-  handleOptions
-    >>> toAffE
-    >>> (try >>> ExceptT)
-    >>> void
-  where
-  handleOptions = handleRequired
-    { required: \{ fsPath } -> runEffectFn1 mkdirPImpl fsPath
-    }
+mkdirP { fsPath } =
+  runEffectFn1 mkdirPImpl fsPath
+    # toAffE
+    # (try >>> ExceptT)
+    # void
 
 foreign import which2Impl :: EffectFn1 String (Promise String)
 
 foreign import which3Impl :: EffectFn2 String Boolean (Promise String)
 
-type WhichArgs = Optional1 ( tool :: Tool ) "check" Boolean
+type WhichArgs =
+  { tool :: String
+  , check :: Maybe Boolean
+  }
 
 which :: WhichArgs -> ExceptT Error Aff FilePath
 which =
@@ -143,7 +146,6 @@ which =
       else
         pure filePath
   where
-  handleOptions = handleOptional1
-    { required: \{ tool } -> runEffectFn1 which2Impl tool
-    , specifyOne: \{ tool, check } -> runEffectFn2 which3Impl tool check
-    }
+  handleOptions { tool, check } = case check of
+    Nothing -> runEffectFn1 which2Impl tool
+    Just c -> runEffectFn2 which3Impl tool c

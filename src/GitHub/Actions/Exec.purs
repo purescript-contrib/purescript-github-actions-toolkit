@@ -9,17 +9,16 @@ module GitHub.Actions.Exec
 
 import Prelude
 
-import Control.Monad.Except.Trans (ExceptT)
+import Control.Monad.Error.Class (try)
+import Control.Monad.Except.Trans (ExceptT(..))
 import Control.Promise (Promise, toAffE)
-import Data.Maybe (Maybe)
+import Data.Maybe (Maybe(..))
 import Data.Nullable (Nullable, toNullable)
 import Effect (Effect)
 import Effect.Aff (Aff)
 import Effect.Exception (Error)
 import Effect.Uncurried (EffectFn1, EffectFn2, EffectFn3, mkEffectFn1, runEffectFn1, runEffectFn2, runEffectFn3)
 import Foreign.Object (Object)
-import GitHub.Actions.Arguments.Optional (Optional2, handleOptional2)
-import GitHub.Actions.Utils (tryActionsM)
 import Node.Buffer (Buffer)
 import Node.Stream (Writable)
 
@@ -113,20 +112,25 @@ foreign import exec1Impl :: EffectFn1 String (Promise Number)
 
 foreign import exec2Impl :: EffectFn2 String (Array String) (Promise Number)
 
+foreign import exec2Impl2 :: EffectFn2 String JSExecOptions (Promise Number)
+
 foreign import exec3Impl :: EffectFn3 String (Array String) JSExecOptions (Promise Number)
 
-type ExecArgs = Optional2 ( command :: String ) "args" (Array String) "options" ExecOptions
+type ExecArgs =
+  { command :: String
+  , args :: Maybe (Array String)
+  , options :: Maybe ExecOptions
+  }
 
 -- | Executes a command on the command line, with arguments
-exec :: ExecArgs -> ExceptT Error Aff { succeeded :: Boolean }
+exec :: ExecArgs -> ExceptT Error Aff Number
 exec =
   handleOptions
     >>> toAffE
-    >>> tryActionsM
-    >>> map ((_ == 0.0) >>> { succeeded: _ })
+    >>> (try >>> ExceptT)
   where
-  handleOptions = handleOptional2
-    { required: \{ command } -> runEffectFn1 exec1Impl command
-    , specifyOne: \{ command, args } -> runEffectFn2 exec2Impl command args
-    , specifyTwo: \{ command, args, options } -> runEffectFn3 exec3Impl command args (toJSExecOptions options)
-    }
+  handleOptions { command, args, options } = case args, options of
+    Nothing, Nothing -> runEffectFn1 exec1Impl command
+    Just a, Nothing -> runEffectFn2 exec2Impl command a
+    Nothing, Just o -> runEffectFn2 exec2Impl2 command (toJSExecOptions o)
+    Just a, Just o -> runEffectFn3 exec3Impl command a (toJSExecOptions o)

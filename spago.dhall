@@ -1,25 +1,15 @@
-{-
-Welcome to a Spago project!
-You can edit this file as you like.
--}
-{ name = "my-project"
+{ name = "purescript-github-actions-toolkit"
 , dependencies =
   [ "aff"
   , "aff-promise"
   , "console"
   , "effect"
   , "foreign-object"
-  , "heterogeneous"
   , "node-buffer"
   , "node-path"
   , "node-streams"
   , "nullable"
-  , "psci-support"
   , "transformers"
-  , "tuples"
-  , "typelevel-prelude"
-  , "variant"
-  , "versions"
   ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]

@@ -14,16 +14,17 @@ import Prelude
 import Control.Monad.Error.Class (try)
 import Control.Monad.Except.Trans (ExceptT(..))
 import Control.Promise (Promise, toAffE)
-import Data.Maybe (Maybe)
+import Data.Maybe (Maybe(..))
 import Data.Nullable (Nullable, toMaybe, toNullable)
 import Effect.Aff (Aff)
 import Effect.Exception (Error)
 import Effect.Uncurried (EffectFn2, EffectFn3, EffectFn4, runEffectFn2, runEffectFn3, runEffectFn4)
-import GitHub.Actions.Arguments.Optional (Optional1, Optional2, handleOptional1, handleOptional2)
 
 foreign import restoreCache2Impl :: EffectFn2 (Array String) String (Promise (Nullable String))
 
 foreign import restoreCache3Impl :: EffectFn3 (Array String) String (Array String) (Promise (Nullable String))
+
+foreign import restoreCache3Impl2 :: EffectFn3 (Array String) String JSDownloadOptions (Promise (Nullable String))
 
 foreign import restoreCache4Impl :: EffectFn4 (Array String) String (Array String) JSDownloadOptions (Promise (Nullable String))
 
@@ -46,7 +47,12 @@ toJSDownloadOptions { useAzureSdk, downloadConcurrency, timeoutInMs } =
   , timeoutInMs: toNullable timeoutInMs
   }
 
-type RestoreCacheArgs = Optional2 ( paths :: Array String, primaryKey :: String ) "restoreKeys" (Array String) "options" DownloadOptions
+type RestoreCacheArgs =
+  { paths :: Array String
+  , primaryKey :: String
+  , restoreKeys :: Maybe (Array String)
+  , options :: Maybe DownloadOptions
+  }
 
 restoreCache :: RestoreCacheArgs -> ExceptT Error Aff (Maybe String)
 restoreCache =
@@ -55,11 +61,11 @@ restoreCache =
     >>> (try >>> ExceptT)
     >>> map toMaybe
   where
-  handleOptions = handleOptional2
-    { required: \{ paths, primaryKey } -> runEffectFn2 restoreCache2Impl paths primaryKey
-    , specifyOne: \{ paths, primaryKey, restoreKeys } -> runEffectFn3 restoreCache3Impl paths primaryKey restoreKeys
-    , specifyTwo: \{ paths, primaryKey, restoreKeys, options } -> runEffectFn4 restoreCache4Impl paths primaryKey restoreKeys (toJSDownloadOptions options)
-    }
+  handleOptions { paths, primaryKey, restoreKeys, options } = case restoreKeys, options of
+    Nothing, Nothing -> runEffectFn2 restoreCache2Impl paths primaryKey
+    Just restKeys, Nothing -> runEffectFn3 restoreCache3Impl paths primaryKey restKeys
+    Nothing, Just opts -> runEffectFn3 restoreCache3Impl2 paths primaryKey (toJSDownloadOptions opts)
+    Just restKeys, Just opts -> runEffectFn4 restoreCache4Impl paths primaryKey restKeys (toJSDownloadOptions opts)
 
 foreign import saveCache2Impl :: EffectFn2 (Array String) String (Promise Number)
 
@@ -81,7 +87,11 @@ toJSUploadOptions { uploadConcurrency, uploadChunkSize } =
   , uploadChunkSize: toNullable uploadChunkSize
   }
 
-type SaveCacheArgs = Optional1 ( paths :: Array String, key :: String ) "options" UploadOptions
+type SaveCacheArgs =
+  { paths :: Array String
+  , key :: String
+  , options :: Maybe UploadOptions
+  }
 
 saveCache :: SaveCacheArgs -> ExceptT Error Aff Number
 saveCache =
@@ -89,7 +99,6 @@ saveCache =
     >>> toAffE
     >>> (try >>> ExceptT)
   where
-  handleOptions = handleOptional1
-    { required: \{ paths, key } -> runEffectFn2 saveCache2Impl paths key
-    , specifyOne: \{ paths, key, options } -> runEffectFn3 saveCache3Impl paths key (toJSUploadOptions options)
-    }
+  handleOptions { paths, key, options } = case options of
+    Nothing -> runEffectFn2 saveCache2Impl paths key
+    Just opts -> runEffectFn3 saveCache3Impl paths key (toJSUploadOptions opts)

@@ -26,11 +26,11 @@ import Prelude
 import Control.Monad.Error.Class (try)
 import Control.Monad.Except.Trans (ExceptT(..))
 import Control.Promise (Promise, fromAff, toAffE)
+import Data.Maybe (Maybe(..))
 import Effect (Effect)
 import Effect.Aff (Aff)
 import Effect.Exception (Error)
 import Effect.Uncurried (EffectFn1, EffectFn2, runEffectFn1, runEffectFn2)
-import GitHub.Actions.Arguments.Optional (Optional1, handleOptional1)
 
 -- | Interface for getInput options
 type InputOptions =
@@ -59,16 +59,18 @@ foreign import getInput1Impl :: EffectFn1 String String
 
 foreign import getInput2Impl :: EffectFn2 String InputOptions String
 
-type GetInputArgs = Optional1 ( name :: String ) "options" InputOptions
+type GetInputArgs =
+  { name :: String
+  , options :: Maybe InputOptions
+  }
 
 -- | Gets the value of an input.  The value is also trimmed.
 getInput :: GetInputArgs -> ExceptT Error Effect String
 getInput = handleOptions >>> (try >>> ExceptT)
   where
-  handleOptions = handleOptional1
-    { required: \{ name } -> runEffectFn1 getInput1Impl name
-    , specifyOne: \{ name, options } -> runEffectFn2 getInput2Impl name options
-    }
+  handleOptions { name, options } = case options of
+    Nothing -> runEffectFn1 getInput1Impl name
+    Just opts -> runEffectFn2 getInput2Impl name opts
 
 foreign import setOutputImpl :: EffectFn2 String String Unit
 
