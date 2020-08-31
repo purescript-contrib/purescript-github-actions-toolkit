@@ -2,7 +2,6 @@
 , dependencies =
   [ "aff"
   , "aff-promise"
-  , "console"
   , "effect"
   , "foreign-object"
   , "node-buffer"
