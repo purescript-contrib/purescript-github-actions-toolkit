@@ -5,7 +5,7 @@
 [![Pursuit](http://pursuit.purescript.org/packages/purescript-purescript-github-actions-toolkit/badge)](http://pursuit.purescript.org/packages/purescript-purescript-github-actions-toolkit)
 [![Maintainer: colinwahl](https://img.shields.io/badge/maintainer-colinwahl-teal.svg)](http://github.com/colinwahl)
 
-The library summary hasn't been written yet (contributions are welcome!). The library summary describes the library's purpose in one to three sentences.
+This library provides PureScript bindings to Github's [Actions Toolkit](https://github.com/actions/toolkit), allowing you to automate your workflows with [Actions](https://github.com/features/actions) written in PureScript.
 
 ## Installation
 
