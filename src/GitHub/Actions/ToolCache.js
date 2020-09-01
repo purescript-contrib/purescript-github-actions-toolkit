@@ -8,13 +8,13 @@ exports.downloadTool2Impl2 = (url, auth) => toolCache.downloadTool(url, undefine
 
 exports.downloadTool3Impl = toolCache.downloadTool;
 
-exports.extract7c1Impl = toolCache.extract7c;
+exports.extract7z1Impl = toolCache.extract7z;
 
-exports.extract7c2Impl = toolCache.extract7c;
+exports.extract7z2Impl = toolCache.extract7z;
 
-exports.extract7c2Impl2 = (file, _7cPath) => toolCache.extract7c(file, undefined, _7cPath);
+exports.extract7z2Impl2 = (file, _7cPath) => toolCache.extract7z(file, undefined, _7cPath);
 
-exports.extract7c3Impl = toolCache.extract7c;
+exports.extract7z3Impl = toolCache.extract7z;
 
 exports.extractTar1Impl = toolCache.extractTar;
 

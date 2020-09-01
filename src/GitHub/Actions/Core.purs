@@ -6,6 +6,7 @@ module GitHub.Actions.Core
   , setSecret
   , addPath
   , getInput
+  , getInput'
   , setOutput
   , setCommandEcho
   , setFailed
@@ -33,6 +34,8 @@ import Effect.Exception (Error)
 import Effect.Uncurried (EffectFn1, EffectFn2, runEffectFn1, runEffectFn2)
 
 -- | Interface for getInput options
+-- | required: Whether the input is required. If required and not present, will throw
+-- | required default: false
 type InputOptions =
   { required :: Boolean
   }
@@ -40,6 +43,8 @@ type InputOptions =
 foreign import exportVariableImpl :: EffectFn2 String String Unit
 
 -- | Sets env variable for this action and future actions in the job
+-- | name: the name of the variable to set
+-- | val: the value of the variable
 exportVariable :: { key :: String, value :: String } -> Effect Unit
 exportVariable { key, value } = runEffectFn2 exportVariableImpl key value
 
@@ -59,12 +64,21 @@ foreign import getInput1Impl :: EffectFn1 String String
 
 foreign import getInput2Impl :: EffectFn2 String InputOptions String
 
+-- | name: name of the value to get
+-- | options: See InputOptions
 type GetInputArgs =
   { name :: String
   , options :: Maybe InputOptions
   }
 
 -- | Gets the value of an input.  The value is also trimmed.
+-- | Uses default for options
+getInput' :: String -> ExceptT Error Effect String
+getInput' name = getInput { name, options: Nothing }
+
+-- | Gets the value of an input.  The value is also trimmed.
+-- | name: the name of the input to get
+-- | options: See InputOptions
 getInput :: GetInputArgs -> ExceptT Error Effect String
 getInput = handleOptions >>> (try >>> ExceptT)
   where
@@ -81,7 +95,6 @@ setOutput { name, value } = runEffectFn2 setOutputImpl name value
 foreign import setCommandEchoImpl :: EffectFn1 Boolean Unit
 
 -- | Enables or disables the echoing of commands into stdout for the rest of the step.
--- | Echoing is disabled by default if ACTIONS_STEP_DEBUG is not set.
 setCommandEcho :: Boolean -> Effect Unit
 setCommandEcho = runEffectFn1 setCommandEchoImpl
 

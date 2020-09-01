@@ -2,24 +2,34 @@
 -- | https://github.com/actions/toolkit/tree/main/packages/tool-cache
 module GitHub.Actions.ToolCache
   ( downloadTool
+  , downloadTool'
   , DownloadToolArgs
-  , extract7c
-  , Extract7cArgs
+  , extract7z
+  , extract7z'
+  , Extract7zArgs
   , extractTar
+  , extractTar'
   , ExtractTarArgs
   , extractXar
+  , extractXar'
   , ExtractXarArgs
   , extractZip
+  , extractZip'
   , ExtractZipArgs
   , cacheDir
+  , cacheDir'
   , CacheDirArgs
   , cacheFile
+  , cacheFile'
   , CacheFileArgs
   , find
+  , find'
   , FindArgs
   , findAllVersions
+  , findAllVersions'
   , FindAllVersionsArgs
   , getManifestFromRepo
+  , getManifestFromRepo'
   , GetManifestFromRepoArgs
   , findFromManifest
   , FindFromManifestArgs
@@ -50,11 +60,18 @@ foreign import downloadTool2Impl2 :: EffectFn2 String String (Promise FilePath)
 
 foreign import downloadTool3Impl :: EffectFn3 String FilePath String (Promise FilePath)
 
+-- | url: url of tool to download
+-- | dest: path to download tool. Defaults to randomly generated path
+-- | auth: authorization header
 type DownloadToolArgs =
   { url :: String
   , dest :: Maybe FilePath
   , auth :: Maybe String
   }
+
+-- | Download a tool from an url and stream it into a file
+downloadTool' :: String -> ExceptT Error Aff FilePath
+downloadTool' url = downloadTool { url, dest: Nothing, auth: Nothing }
 
 -- | Download a tool from an url and stream it into a file
 downloadTool :: DownloadToolArgs -> ExceptT Error Aff FilePath
@@ -69,32 +86,39 @@ downloadTool =
     Nothing, Just a -> runEffectFn2 downloadTool2Impl url a
     Just d, Just a -> runEffectFn3 downloadTool3Impl url d a
 
-foreign import extract7c1Impl :: EffectFn1 FilePath (Promise FilePath)
+foreign import extract7z1Impl :: EffectFn1 FilePath (Promise FilePath)
 
-foreign import extract7c2Impl :: EffectFn2 FilePath FilePath (Promise FilePath)
+foreign import extract7z2Impl :: EffectFn2 FilePath FilePath (Promise FilePath)
 
-foreign import extract7c2Impl2 :: EffectFn2 FilePath FilePath (Promise FilePath)
+foreign import extract7z2Impl2 :: EffectFn2 FilePath FilePath (Promise FilePath)
 
-foreign import extract7c3Impl :: EffectFn3 FilePath FilePath FilePath (Promise FilePath)
+foreign import extract7z3Impl :: EffectFn3 FilePath FilePath FilePath (Promise FilePath)
 
-type Extract7cArgs =
+-- | file: path to the .7z file
+-- | dest: destination directory. Optional.
+-- | _7zPath: path to 7zr.exe. Optional, for long path support.
+type Extract7zArgs =
   { file :: FilePath
   , dest :: Maybe FilePath
-  , _7cPath :: Maybe FilePath
+  , _7zPath :: Maybe FilePath
   }
 
--- | Extract a .7z file
-extract7c :: Extract7cArgs -> ExceptT Error Aff String
-extract7c =
+-- | Extract a .7z file. Returns path to the destination directory
+extract7z' :: FilePath -> ExceptT Error Aff FilePath
+extract7z' file = extract7z { file, dest: Nothing, _7zPath: Nothing }
+
+-- | Extract a .7z file. Returns path to the destination directory
+extract7z :: Extract7zArgs -> ExceptT Error Aff FilePath
+extract7z =
   handleOptional
     >>> toAffE
     >>> (try >>> ExceptT)
   where
-  handleOptional { file, dest, _7cPath } = case dest, _7cPath of
-    Nothing, Nothing -> runEffectFn1 extract7c1Impl file
-    Just d, Nothing -> runEffectFn2 extract7c2Impl file d
-    Nothing, Just _7c -> runEffectFn2 extract7c2Impl2 file _7c
-    Just d, Just _7c -> runEffectFn3 extract7c3Impl file d _7c
+  handleOptional { file, dest, _7zPath } = case dest, _7zPath of
+    Nothing, Nothing -> runEffectFn1 extract7z1Impl file
+    Just d, Nothing -> runEffectFn2 extract7z2Impl file d
+    Nothing, Just _7z -> runEffectFn2 extract7z2Impl2 file _7z
+    Just d, Just _7z -> runEffectFn3 extract7z3Impl file d _7z
 
 foreign import extractTar1Impl :: EffectFn1 FilePath (Promise FilePath)
 
@@ -104,13 +128,20 @@ foreign import extractTar2Impl2 :: EffectFn2 FilePath (Array String) (Promise Fi
 
 foreign import extractTar3Impl :: EffectFn3 FilePath FilePath (Array String) (Promise FilePath)
 
+-- | file: path to the tar
+-- | dest: destination directory. Defaults to randomly generated path
+-- | flags: flags for the tar command to use for extraction. Defaults to 'xz' (extracting gzipped tars).
 type ExtractTarArgs =
   { file :: FilePath
   , dest :: Maybe FilePath
   , flags :: Maybe (Array String)
   }
 
--- | Extract a compressed tar archive
+-- | Extract a compressed tar archive. Returns path to the destination directory
+extractTar' :: FilePath -> ExceptT Error Aff FilePath
+extractTar' file = extractTar { file, dest: Nothing, flags: Nothing }
+
+-- | Extract a compressed tar archive. Returns path to the destination directory
 extractTar :: ExtractTarArgs -> ExceptT Error Aff FilePath
 extractTar =
   handleOptional
@@ -131,13 +162,20 @@ foreign import extractXar2Impl2 :: EffectFn2 FilePath (Array String) (Promise Fi
 
 foreign import extractXar3Impl :: EffectFn3 FilePath FilePath (Array String) (Promise FilePath)
 
+-- | file: path to the archive
+-- | dest: destination directory. Defaults to randomly generated path
+-- | flags: flags for the xar
 type ExtractXarArgs =
   { file :: FilePath
   , dest :: Maybe FilePath
   , flags :: Maybe (Array String)
   }
 
--- | Extract a xar compatible archive
+-- | Extract a xar compatible archive. Returns path to the destination directory
+extractXar' :: FilePath -> ExceptT Error Aff FilePath
+extractXar' file = extractXar { file, dest: Nothing, flags: Nothing }
+
+-- | Extract a xar compatible archive. Returns path to the destination directory
 extractXar :: ExtractXarArgs -> ExceptT Error Aff FilePath
 extractXar =
   handleOptional
@@ -154,12 +192,18 @@ foreign import extractZip1Impl :: EffectFn1 FilePath (Promise FilePath)
 
 foreign import extractZip2Impl :: EffectFn2 FilePath FilePath (Promise FilePath)
 
+-- file: path to the zip
+-- dest: destination directory. Defaults to randomly generated path
 type ExtractZipArgs =
   { file :: FilePath
   , dest :: Maybe FilePath
   }
 
--- | Extract a zip
+-- | Extract a zip. Returns path to the destination directory
+extractZip' :: FilePath -> ExceptT Error Aff FilePath
+extractZip' file = extractZip { file, dest: Nothing }
+
+-- | Extract a zip. Returns path to the destination directory
 extractZip :: ExtractZipArgs -> ExceptT Error Aff FilePath
 extractZip =
   handleOptions
@@ -174,12 +218,20 @@ foreign import cacheDir3Impl :: EffectFn3 FilePath String String (Promise FilePa
 
 foreign import cacheDir4Impl :: EffectFn4 FilePath String String String (Promise FilePath)
 
+-- | sourceDir: the directory to cache into tools
+-- | tool: tool name
+-- | version: version of the tool.  semver format
+-- | architecture of the tool. Defaults to machine architecture
 type CacheDirArgs =
   { sourceDir :: String
   , tool :: String
   , version :: String
   , arch :: Maybe String
   }
+
+-- | Caches a directory and installs it into the tool cacheDir
+cacheDir' :: { sourceDir :: String, tool :: String , version :: String } -> ExceptT Error Aff FilePath
+cacheDir' { sourceDir, tool, version } = cacheDir { sourceDir, tool, version, arch: Nothing }
 
 -- | Caches a directory and installs it into the tool cacheDir
 cacheDir :: CacheDirArgs -> ExceptT Error Aff FilePath
@@ -196,6 +248,11 @@ foreign import cacheFile4Impl :: EffectFn4 FilePath FilePath String String (Prom
 
 foreign import cacheFile5Impl :: EffectFn5 FilePath FilePath String String String (Promise FilePath)
 
+-- | sourceFile: the file to cache into tools.  Typically a result of downloadTool which is a guid
+-- | targetFile: the name of the file name in the tools directory
+-- | tool: tool name
+-- | version: version of the tool.  semver format
+-- | arch: architecture of the tool. Defaults to machine architecture
 type CacheFileArgs =
   { sourceFile :: FilePath
   , targetFile :: FilePath
@@ -204,8 +261,11 @@ type CacheFileArgs =
   , arch :: Maybe String
   }
 
--- | Caches a downloaded file (GUID) and installs it
--- | into the tool cache with a given targetName
+-- | Caches a downloaded file (GUID) and installs it into the tool cache with a given targetName
+cacheFile' :: { sourceFile :: FilePath, targetFile :: FilePath, tool :: String, version :: String } -> ExceptT Error Aff FilePath
+cacheFile' { sourceFile, targetFile, tool, version } = cacheFile { sourceFile, targetFile, tool, version, arch: Nothing }
+
+-- | Caches a downloaded file (GUID) and installs it into the tool cache with a given targetName
 cacheFile :: CacheFileArgs -> ExceptT Error Aff FilePath
 cacheFile =
   handleOptions
@@ -220,11 +280,18 @@ foreign import find2Impl :: EffectFn2 String String FilePath
 
 foreign import find3Impl :: EffectFn3 String String String FilePath
 
+-- | toolName: name of the tool
+-- | version: version of the tool.
+-- | arch: architecture of the tool. Defaults to machine architecture
 type FindArgs =
   { toolName :: String
   , versionSpec :: String
   , arch :: Maybe String
   }
+
+-- | Finds the path to a tool version in the local installed tool cache
+find' :: { toolName :: String, versionSpec :: String } -> ExceptT Error Effect (Maybe FilePath)
+find' { toolName, versionSpec } = find { toolName, versionSpec, arch: Nothing }
 
 -- | Finds the path to a tool version in the local installed tool cache
 find :: FindArgs -> ExceptT Error Effect (Maybe FilePath)
@@ -242,10 +309,16 @@ foreign import findAllVersions1Impl :: EffectFn1 String (Array FilePath)
 
 foreign import findAllVersions2Impl :: EffectFn2 String String (Array FilePath)
 
+-- | toolName: name of the tool
+-- | arch: architecture of the tool. Defaults to machine architecture
 type FindAllVersionsArgs =
   { toolName :: String
   , arch :: Maybe String
   }
+
+-- | Finds the paths to all versions of a tool that are installed in the local tool cache
+findAllVersions' :: String -> ExceptT Error Effect (Array FilePath)
+findAllVersions' toolName = findAllVersions { toolName, arch: Nothing }
 
 -- | Finds the paths to all versions of a tool that are installed in the local tool cache
 findAllVersions :: FindAllVersionsArgs -> ExceptT Error Effect (Array FilePath)
@@ -258,6 +331,7 @@ findAllVersions =
     Nothing -> runEffectFn1 findAllVersions1Impl toolName
     Just a -> runEffectFn2 findAllVersions2Impl toolName a
 
+-- | Details for a release file
 type IToolReleaseFile =
   { filename :: String
   , platform :: String
@@ -274,6 +348,7 @@ type JSIToolReleaseFile =
   , download_url :: String
   }
 
+-- | Details for a release
 type IToolRelease =
   { version :: String
   , stable :: Boolean
@@ -330,6 +405,10 @@ foreign import getManifestFromRepo3Impl2 :: EffectFn3 String String String (Prom
 
 foreign import getManifestFromRepo4Impl :: EffectFn4 String String String String (Promise (Array JSIToolRelease))
 
+-- | owner: repository owner
+-- | repo: repository name
+-- | auth: auth token
+-- | branch: branch of the repository. Defaults to 'master'
 type GetManifestFromRepoArgs =
   { owner :: String
   , repo :: String
@@ -337,6 +416,11 @@ type GetManifestFromRepoArgs =
   , branch :: Maybe String
   }
 
+-- Get list of releases from a repository
+getManifestFromRepo' :: { owner :: String, repo :: String } -> ExceptT Error Aff (Array IToolRelease)
+getManifestFromRepo' { owner, repo } = getManifestFromRepo { owner, repo, auth: Nothing, branch: Nothing }
+
+-- Get list of releases from a repository
 getManifestFromRepo :: GetManifestFromRepoArgs -> ExceptT Error Aff (Array IToolRelease)
 getManifestFromRepo =
   handleOptions
@@ -354,6 +438,10 @@ foreign import findFromManifest3Impl :: EffectFn3 String Boolean (Array JSIToolR
 
 foreign import findFromManifest4Impl :: EffectFn4 String Boolean (Array JSIToolRelease) String (Promise (Nullable JSIToolRelease))
 
+-- versionSpec: version to search for
+-- stable: whether or not the release is stable
+-- manifest: manifests to search
+-- archFilter: architecture filter. Defaults to machine architecture
 type FindFromManifestArgs =
   { versionSpec :: String
   , stable :: Boolean
@@ -361,6 +449,7 @@ type FindFromManifestArgs =
   , archFilter :: Maybe String
   }
 
+-- Search list of releases from a repository
 findFromManifest :: FindFromManifestArgs -> ExceptT Error Aff (Maybe IToolRelease)
 findFromManifest =
   handleOptions

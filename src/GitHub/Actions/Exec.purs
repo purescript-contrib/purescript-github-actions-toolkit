@@ -2,9 +2,12 @@
 -- | https://github.com/actions/toolkit/tree/main/packages/exec
 module GitHub.Actions.Exec
   ( exec
+  , exec'
   , ExecArgs
   , ExecOptions
+  , defaultExecOptions
   , ExecListeners
+  , defaultExecListeners
   ) where
 
 import Prelude
@@ -22,6 +25,17 @@ import Foreign.Object (Object)
 import Node.Buffer (Buffer)
 import Node.Stream (Writable)
 
+-- | cwd: working directory.  defaults to current
+-- | env: envvar dictionary.  defaults to current process's env
+-- | silent: defaults to false
+-- | outStream: Defaults to process.stdout
+-- | errStream: Defaults to process.stderr
+-- | windowsVerbatimArguments: whether to skip quoting/escaping arguments if needed.  defaults to false
+-- | failOnStdErr: whether to fail if output to stderr.  defaults to false
+-- | ignoreReturnCode: defaults to failing on non zero.  ignore will not fail leaving it up to the caller
+-- | delay: How long in ms to wait for STDIO streams to close after the exit event of the process before terminating. defaults to 10000
+-- | input: input to write to the process on STDIN
+-- | listeners: Listeners for output. Callback functions that will be called on these events
 type ExecOptions =
   { cwd :: Maybe String
   , env :: Maybe (Object String)
@@ -36,12 +50,39 @@ type ExecOptions =
   , listeners :: Maybe ExecListeners
   }
 
+-- Defaults for ExecOptions. Override as needed.
+defaultExecOptions :: ExecOptions
+defaultExecOptions =
+  { cwd: Nothing
+  , env: Nothing
+  , silent: Nothing
+  , outStream: Nothing
+  , errStream: Nothing
+  , windowsVerbatimArguments: Nothing
+  , failOnStdErr: Nothing
+  , ignoreReturnCode: Nothing
+  , delay: Nothing
+  , input: Nothing
+  , listeners: Nothing
+  }
+
+-- | Listeners for output. Callback functions that will be called on these events
 type ExecListeners =
   { stdout :: Maybe (Buffer -> Effect Unit)
   , stderr :: Maybe (Buffer -> Effect Unit)
   , stdline :: Maybe (String -> Effect Unit)
   , errline :: Maybe (String -> Effect Unit)
   , debug :: Maybe (String -> Effect Unit)
+  }
+
+-- Defaults for ExecListeners. Override as needed.
+defaultExecListeners :: ExecListeners
+defaultExecListeners =
+  { stdout: Nothing
+  , stderr: Nothing
+  , stdline: Nothing
+  , errline: Nothing
+  , debug: Nothing
   }
 
 type JSExecOptions =
@@ -116,13 +157,21 @@ foreign import exec2Impl2 :: EffectFn2 String JSExecOptions (Promise Number)
 
 foreign import exec3Impl :: EffectFn3 String (Array String) JSExecOptions (Promise Number)
 
+-- | commandLine: command to execute (can include additional args). Must be correctly escaped.
+-- | args: optional arguments for tool. Escaping is handled by the lib. Defaults to empty array.
+-- | options: optional exec options.  See ExecOptions
 type ExecArgs =
   { command :: String
   , args :: Maybe (Array String)
   , options :: Maybe ExecOptions
   }
 
+-- | Executes a command on the command line. Uses defaults for args and options
+exec' :: String -> ExceptT Error Aff Number
+exec' command = exec { command, args: Nothing, options: Nothing }
+
 -- | Executes a command on the command line, with arguments
+-- | Output will be streamed to the live console. Provides return code
 exec :: ExecArgs -> ExceptT Error Aff Number
 exec =
   handleOptions
