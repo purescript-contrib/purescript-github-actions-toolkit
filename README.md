@@ -17,7 +17,7 @@ spago install github-actions-toolkit
 
 ## Quick start
 
-The quick start hasn't been written yet (contributions are welcome!). The quick start covers a common, minimal use case for the library, whereas longer examples and tutorials are kept in the [docs directory](./docs.)
+There is a template for defining your own actions with found [here](https://github.com/colinwahl/hello-world-purescript-action).  The template provides a starting point in order to define your own actions with these bindings!
 
 ## Documentation
 
