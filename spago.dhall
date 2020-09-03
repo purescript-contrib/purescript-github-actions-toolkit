@@ -1,4 +1,4 @@
-{ name = "purescript-github-actions-toolkit"
+{ name = "github-actions-toolkit"
 , dependencies =
   [ "aff"
   , "aff-promise"
