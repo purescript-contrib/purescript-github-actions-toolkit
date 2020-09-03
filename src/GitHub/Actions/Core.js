@@ -1,4 +1,4 @@
-const core = require("@actions/core");
+var core = require("@actions/core");
 
 exports.exportVariableImpl = core.exportVariable;
 

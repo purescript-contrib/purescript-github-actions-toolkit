@@ -1,4 +1,4 @@
-const io = require("@actions/io");
+var io = require("@actions/io");
 
 exports.cp2Impl = io.cp;
 

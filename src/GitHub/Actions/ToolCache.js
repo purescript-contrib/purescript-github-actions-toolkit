@@ -1,10 +1,11 @@
-const toolCache = require("@actions/tool-cache");
+var toolCache = require("@actions/tool-cache");
 
 exports.downloadTool1Impl = toolCache.downloadTool;
 
 exports.downloadTool2Impl = toolCache.downloadTool;
 
-exports.downloadTool2Impl2 = (url, auth) => toolCache.downloadTool(url, undefined, auth);
+exports.downloadTool2Impl2 = (url, auth) =>
+  toolCache.downloadTool(url, undefined, auth);
 
 exports.downloadTool3Impl = toolCache.downloadTool;
 
@@ -12,7 +13,8 @@ exports.extract7z1Impl = toolCache.extract7z;
 
 exports.extract7z2Impl = toolCache.extract7z;
 
-exports.extract7z2Impl2 = (file, _7cPath) => toolCache.extract7z(file, undefined, _7cPath);
+exports.extract7z2Impl2 = (file, _7cPath) =>
+  toolCache.extract7z(file, undefined, _7cPath);
 
 exports.extract7z3Impl = toolCache.extract7z;
 
@@ -20,7 +22,8 @@ exports.extractTar1Impl = toolCache.extractTar;
 
 exports.extractTar2Impl = toolCache.extractTar;
 
-exports.extractTar2Impl2 = (file, flags) => toolCache.extractTar(file, undefined, flags);
+exports.extractTar2Impl2 = (file, flags) =>
+  toolCache.extractTar(file, undefined, flags);
 
 exports.extractTar3Impl = toolCache.extractTar;
 
@@ -28,7 +31,8 @@ exports.extractXar1Impl = toolCache.extractXar;
 
 exports.extractXar2Impl = toolCache.extractXar;
 
-exports.extractXar2Impl2 = (file, flags) => toolCache.extractXar(file, undefined, flags);
+exports.extractXar2Impl2 = (file, flags) =>
+  toolCache.extractXar(file, undefined, flags);
 
 exports.extractXar3Impl = toolCache.extractXar;
 
@@ -56,7 +60,8 @@ exports.getManifestFromRepo2Impl = toolCache.getManifestFromRepo;
 
 exports.getManifestFromRepo3Impl = toolCache.getManifestFromRepo;
 
-exports.getManifestFromRepo3Impl2 = (owner, repo, branch) => toolCache.getManfiestFromRepo(owner, repo, undefined, branch);
+exports.getManifestFromRepo3Impl2 = (owner, repo, branch) =>
+  toolCache.getManfiestFromRepo(owner, repo, undefined, branch);
 
 exports.getManifestFromRepo4Impl = toolCache.getManifestFromRepo;
 
