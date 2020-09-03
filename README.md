@@ -12,7 +12,7 @@ This library provides PureScript bindings to Github's [Actions Toolkit](https://
 Install GitHub Actions Toolkit with [Spago](https://github.com/purescript/spago):
 
 ```sh
-spago install purescript-github-actions-toolkit
+spago install github-actions-toolkit
 ```
 
 ## Quick start
