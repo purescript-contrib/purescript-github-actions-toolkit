@@ -1,4 +1,5 @@
-var toolCache = require("@actions/tool-cache");
+"use strict";
+const toolCache = require("@actions/tool-cache");
 
 exports.downloadTool1Impl = toolCache.downloadTool;
 

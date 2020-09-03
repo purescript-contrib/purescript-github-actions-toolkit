@@ -1,4 +1,5 @@
-var core = require("@actions/core");
+"use strict";
+const core = require("@actions/core");
 
 exports.exportVariableImpl = core.exportVariable;
 

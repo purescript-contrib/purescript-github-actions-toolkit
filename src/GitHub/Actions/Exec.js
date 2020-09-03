@@ -1,4 +1,5 @@
-var exec = require("@actions/exec");
+"use strict";
+const exec = require("@actions/exec");
 
 exports.exec1Impl = exec.exec;
 

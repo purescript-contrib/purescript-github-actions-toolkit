@@ -1,4 +1,5 @@
-var cache = require("@actions/cache");
+"use strict";
+const cache = require("@actions/cache");
 
 exports.restoreCache2Impl = cache.restoreCache;
 
