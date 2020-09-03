@@ -17,7 +17,59 @@ spago install github-actions-toolkit
 
 ## Quick start
 
-There is a template for defining your own actions with found [here](https://github.com/colinwahl/hello-world-purescript-action).  The template provides a starting point in order to define your own actions with these bindings!
+An Action is an `action.yml` file pair with a Node script.
+
+This library provides PureScript bindings to [Github's Actions Toolkit](https://github.com/actions/toolkit), which provides useful tools for writing Actions.
+
+To write your own Action, create an `action.yml` file which specifies the inputs, outputs, and metadata which will be used by your Action. See [GitHub's docs](https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions) on the syntax of this file. Then you can use this library to write a Node script which will execute the Action based on the `action.yml` file.
+
+You can use the [Hello World PureScript Action template](https://github.com/colinwahl/hello-world-purescript-action) to get started defining your own Action. The template provides a starting point in order to define your own actions with these bindings!
+
+Here are some common functions which are used when defining Actions:
+
+Get an input with key `username` specified by the `action.yml` file for use in the script, then log it:
+
+```purescript
+main :: Effect Unit
+main = void $ runExceptT do
+  username <- Core.getInput { name: "username", options: Just { required: true }}
+  liftEffect $ Core.info username
+```
+
+Use `which` to check that a tool is installed, and set the job to failed if it isn't.
+
+```purescript
+main :: Effect Unit
+main = do
+  result <- runExcaptT (IO.which { tool: "spago", check: true })
+  case result of
+    Left err ->
+      Core.error "spago not found"
+      Core.setFailed "Required tool spago is not available for this job."
+    Right spagoPath ->
+      Core.info $ "spago found at path " <> spagoPath
+      pure unit -- If your job ends without failing, then it succeeded.
+```
+
+Run an arbitrary command with `exec`.
+
+```purescript
+main :: Effect Unit
+main = do
+  result <- runExceptT (Exec.exec' "spago build")
+  case result of
+    Left err ->
+      -- Something bad happened, log error and set failed
+      Core.error $ message err
+      Core.setFailed "Exception was thrown during spago build"
+    Right returnCode | returnCode == 0.0 ->
+      Core.info "spago build succeeded"
+    Right returnCode ->
+      Core.warning $ "spago build failed with ruturn code" <> returnCode
+      Core.setFailed "spago exited with nonzero return code"
+```
+
+You can find documentation for all of the functions in this library in [the docs directory](./docs).
 
 ## Documentation
 
@@ -25,7 +77,8 @@ GitHub Actions Toolkit documentation is stored in a few places:
 
 1. Module documentation is [published on Pursuit](https://pursuit.purescript.org/packages/purescript-github-actions-toolkit).
 2. Written documentation and [the changelog](./docs/CHANGELOG.md) are kept in [the docs directory](./docs).
-3. Usage examples can be found in [the test suite](./test).
+
+For a usage example, see the [Hello World PureScript Action template](https://github.com/colinwahl/hello-world-purescript-action).  For a real-world action that uses these bindings, see [Setup PureScript](https://github.com/purescript-contrib/setup-purescript).
 
 If you get stuck, there are several ways to get help:
 
