@@ -1,7 +1,7 @@
 # GitHub Actions Toolkit
 
-[![CI](https://github.com/colinwahl/purescript-github-actions-toolkit/workflows/CI/badge.svg?branch=main)](https://github.com/colinwahl/purescript-github-actions-toolkit/actions?query=workflow%3ACI+branch%3Amain)
-[![Release](http://img.shields.io/github/release/colinwahl/purescript-github-actions-toolkit.svg)](https://github.com/colinwahl/purescript-github-actions-toolkit/releases)
+[![CI](https://github.com/purescript-contrib/purescript-github-actions-toolkit/workflows/CI/badge.svg?branch=main)](https://github.com/purescript-contrib/purescript-github-actions-toolkit/actions?query=workflow%3ACI+branch%3Amain)
+[![Release](http://img.shields.io/github/release/purescript-contrib/purescript-github-actions-toolkit.svg)](https://github.com/purescript-contrib/purescript-github-actions-toolkit/releases)
 [![Pursuit](http://pursuit.purescript.org/packages/purescript-github-actions-toolkit/badge)](http://pursuit.purescript.org/packages/purescript-github-actions-toolkit)
 [![Maintainer: colinwahl](https://img.shields.io/badge/maintainer-colinwahl-teal.svg)](http://github.com/colinwahl)
 
@@ -13,6 +13,12 @@ Install GitHub Actions Toolkit with [Spago](https://github.com/purescript/spago)
 
 ```sh
 spago install github-actions-toolkit
+```
+
+You will also need to install the npm packages for any bindings that you are using. For example, if you use functions exported from `GitHub.Actions.Core`, then you need to install the `@actions/core` npm package:
+
+```sh
+npm install @actions/core
 ```
 
 ## Quick start
@@ -41,7 +47,7 @@ Use `which` to check that a tool is installed, and set the job to failed if it i
 ```purescript
 main :: Effect Unit
 main = do
-  result <- runExcaptT (IO.which { tool: "spago", check: true })
+  result <- runExceptT (IO.which { tool: "spago", check: true })
   case result of
     Left err ->
       Core.error "spago not found"
@@ -82,14 +88,14 @@ For a usage example, see the [Hello World PureScript Action template](https://gi
 
 If you get stuck, there are several ways to get help:
 
-- [Open an issue](https://github.com/colinwahl/purescript-github-actions-toolkit/issues) if you have encountered a bug or problem.
+- [Open an issue](https://github.com/purescript-contrib/purescript-github-actions-toolkit/issues) if you have encountered a bug or problem.
 - [Search or start a thread on the PureScript Discourse](https://discourse.purescript.org) if you have general questions. You can also ask questions in the `#purescript` and `#purescript-beginners` channels on the [Functional Programming Slack](https://functionalprogramming.slack.com) ([invite link](https://fpchat-invite.herokuapp.com/)).
 
 ## Contributing
 
 You can contribute to GitHub Actions Toolkit in several ways:
 
-1. If you encounter a problem or have a question, please [open an issue](https://github.com/colinwahl/purescript-github-actions-toolkit/issues). We'll do our best to work with you to resolve or answer it.
+1. If you encounter a problem or have a question, please [open an issue](https://github.com/purescript-contrib/purescript-github-actions-toolkit/issues). We'll do our best to work with you to resolve or answer it.
 
 2. If you would like to contribute code, tests, or documentation, please [read the contributor guide](./.github/CONTRIBUTING.md). It's a short, helpful introduction to contributing to this library, including development instructions.
 
