@@ -58,7 +58,6 @@ defaultDownloadOptions =
   , timeoutInMs: Nothing
   }
 
-
 toJSDownloadOptions :: DownloadOptions -> JSDownloadOptions
 toJSDownloadOptions { useAzureSdk, downloadConcurrency, timeoutInMs } =
   { useAzureSdk: toNullable useAzureSdk

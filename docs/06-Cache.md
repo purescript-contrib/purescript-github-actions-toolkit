@@ -37,4 +37,3 @@ let paths =
 let key = 'npm-foobar-d5ea0750'
 cacheId <- Cache.saveCache { paths, key }
 ```
-
