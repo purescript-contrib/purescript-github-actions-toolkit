@@ -1,0 +1,27 @@
+{
+    "name": "purescript-github-actions-toolkit",
+    "license": [
+        "MIT"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/purescript-contrib/purescript-github-actions-toolkit"
+    },
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "output"
+    ],
+    "dependencies": {
+        "purescript-aff": "^v5.1.2",
+        "purescript-aff-promise": "^v2.1.0",
+        "purescript-effect": "^v2.0.1",
+        "purescript-foreign-object": "^v2.0.3",
+        "purescript-node-buffer": "^v6.0.0",
+        "purescript-node-path": "^v3.0.0",
+        "purescript-node-streams": "^v4.0.1",
+        "purescript-nullable": "^v4.1.1",
+        "purescript-transformers": "^v4.2.0"
+    }
+}
