@@ -5,9 +5,9 @@ This directory contains documentation for GitHub Actions Toolkit. If you are int
 
 ## Table of Contents
 
-1. [What is a GitHub Action?]("./01-What-Is-An-Action.md")
-2. [Core]("./02-Core.md")
-3. [Exec]("./03-Exec.md")
-4. [IO]("./04-IO.md")
-5. [Tool Cache]("./05-Tool-Cache.md")
-6. [Cache]("./06-Cache.md")
+1. [What is a GitHub Action?](./01-What-Is-An-Action.md)
+2. [Core](./02-Core.md)
+3. [Exec](./03-Exec.md)
+4. [IO](./04-IO.md)
+5. [Tool Cache](./05-Tool-Cache.md)
+6. [Cache](./06-Cache.md)
