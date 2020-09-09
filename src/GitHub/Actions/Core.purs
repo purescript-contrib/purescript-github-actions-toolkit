@@ -146,7 +146,7 @@ foreign import endGroupImpl :: Effect Unit
 
 -- | End an output group.
 endGroup :: Effect Unit
-endGroup = runEffectFn1 endGroupImpl
+endGroup = endGroupImpl
 
 foreign import saveStateImpl :: EffectFn2 String String Unit
 

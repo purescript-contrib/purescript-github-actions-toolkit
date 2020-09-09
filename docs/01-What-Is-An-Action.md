@@ -6,6 +6,4 @@ Specifically, an Action is an `action.yml` file paired with a Node script (found
 
 ### What is GitHub's Actions Toolkit?
 
-[GitHub's Actions Toolkit](https://github.com/actions/toolkit) is a set of Node modules which provide useful tools for creating Actions. For example:
-
-`GitHub.Actions.Core` provides bindings to the [core](https://github.com/actions/toolkit/tree/main/packages/core) package, which allows you to 
+[GitHub's Actions Toolkit](https://github.com/actions/toolkit) is a set of Node modules which provide useful tools for creating Actions. This library provides bindings to the packages within the toolkit in order to define GitHub Actions in PureScript.
