@@ -142,10 +142,10 @@ foreign import startGroupImpl :: EffectFn1 String Unit
 startGroup :: String -> Effect Unit
 startGroup = runEffectFn1 startGroupImpl
 
-foreign import endGroupImpl :: EffectFn1 String Unit
+foreign import endGroupImpl :: Effect Unit
 
 -- | End an output group.
-endGroup :: String -> Effect Unit
+endGroup :: Effect Unit
 endGroup = runEffectFn1 endGroupImpl
 
 foreign import saveStateImpl :: EffectFn2 String String Unit
