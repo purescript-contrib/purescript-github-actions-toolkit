@@ -50,7 +50,7 @@ type ExecOptions =
   , listeners :: Maybe ExecListeners
   }
 
--- Defaults for ExecOptions. Override as needed.
+-- | Defaults for ExecOptions. Override as needed.
 defaultExecOptions :: ExecOptions
 defaultExecOptions =
   { cwd: Nothing
@@ -75,7 +75,7 @@ type ExecListeners =
   , debug :: Maybe (String -> Effect Unit)
   }
 
--- Defaults for ExecListeners. Override as needed.
+-- | Defaults for ExecListeners. Override as needed.
 defaultExecListeners :: ExecListeners
 defaultExecListeners =
   { stdout: Nothing

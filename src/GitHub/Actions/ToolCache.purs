@@ -192,8 +192,8 @@ foreign import extractZip1Impl :: EffectFn1 FilePath (Promise FilePath)
 
 foreign import extractZip2Impl :: EffectFn2 FilePath FilePath (Promise FilePath)
 
--- file: path to the zip
--- dest: destination directory. Defaults to randomly generated path
+-- | file: path to the zip
+-- | dest: destination directory. Defaults to randomly generated path
 type ExtractZipArgs =
   { file :: FilePath
   , dest :: Maybe FilePath
@@ -416,11 +416,11 @@ type GetManifestFromRepoArgs =
   , branch :: Maybe String
   }
 
--- Get list of releases from a repository
+-- | Get list of releases from a repository
 getManifestFromRepo' :: { owner :: String, repo :: String } -> ExceptT Error Aff (Array IToolRelease)
 getManifestFromRepo' { owner, repo } = getManifestFromRepo { owner, repo, auth: Nothing, branch: Nothing }
 
--- Get list of releases from a repository
+-- | Get list of releases from a repository
 getManifestFromRepo :: GetManifestFromRepoArgs -> ExceptT Error Aff (Array IToolRelease)
 getManifestFromRepo =
   handleOptions
@@ -438,10 +438,10 @@ foreign import findFromManifest3Impl :: EffectFn3 String Boolean (Array JSIToolR
 
 foreign import findFromManifest4Impl :: EffectFn4 String Boolean (Array JSIToolRelease) String (Promise (Nullable JSIToolRelease))
 
--- versionSpec: version to search for
--- stable: whether or not the release is stable
--- manifest: manifests to search
--- archFilter: architecture filter. Defaults to machine architecture
+-- | versionSpec: version to search for
+-- | stable: whether or not the release is stable
+-- | manifest: manifests to search
+-- | archFilter: architecture filter. Defaults to machine architecture
 type FindFromManifestArgs =
   { versionSpec :: String
   , stable :: Boolean
@@ -449,7 +449,7 @@ type FindFromManifestArgs =
   , archFilter :: Maybe String
   }
 
--- Search list of releases from a repository
+-- | Search list of releases from a repository
 findFromManifest :: FindFromManifestArgs -> ExceptT Error Aff (Maybe IToolRelease)
 findFromManifest =
   handleOptions
