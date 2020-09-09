@@ -1,8 +1,8 @@
-# Github.Actions.Core
+# GitHub.Actions.Core
 
 > Core functions for setting results, logging, registering secrets and exporting variables across actions
 
-This module exposes bindings to the [@actions/core module](https://github.com/actions/toolkit/tree/main/packages/core).
+This module exposes bindings to the [@actions/core package](https://github.com/actions/toolkit/tree/main/packages/core).
 
 ## Usage
 
@@ -47,7 +47,7 @@ example = do
 You should use this library to set the failing exit code for your action.  If status is not set and the script runs to completion, that will lead to a success.
 
 ```purescript
-task = do stuff that might fail here
+task = mempty -- do stuff that might fail here
 
 example = do
   case runExceptT task of
@@ -57,7 +57,7 @@ example = do
 
 #### Logging
 
-Finally, this library provides some utilities for logging. Note that debug logging is hidden from the logs by default. This behavior can be toggled by enabling the [Step Debug Logs](../../docs/action-debugging.md#step-debug-logs).
+Finally, this library provides some utilities for logging. Note that debug logging is hidden from the logs by default. This behavior can be toggled.
 
 ```js
 task = do
