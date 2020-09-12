@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, comprehensive-test]
   pull_request:
     branches: [main]
 
@@ -49,3 +49,5 @@ jobs:
 
       - name: Run tests
         run: npm run test
+        with:
+          test-input: "hello test"
