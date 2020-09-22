@@ -12,6 +12,7 @@
     "@actions/core": "^1.2.5",
     "@actions/exec": "^1.0.4",
     "@actions/io": "^1.0.2",
-    "@actions/tool-cache": "^1.6.0"
+    "@actions/tool-cache": "^1.6.0",
+    "@vercel/ncc": "^0.24.1"
   }
 }
