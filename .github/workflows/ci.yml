@@ -47,4 +47,4 @@ jobs:
         run: spago bundle-module --main Test.Main --to output/index.js && ./node_modules/@vercel/ncc/dist/ncc/cli.js build --minify test/index.js
 
       - name: Run tests
-        uses: test/
+        uses: test
