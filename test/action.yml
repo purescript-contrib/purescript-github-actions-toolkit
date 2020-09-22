@@ -1,5 +1,8 @@
 name: 'Test'
 description: 'Test out bindings in this library'
+outputs:
+  did-it-work:
+    description: 'Did the test work?'
 runs:
   using: 'node12'
   main: '../dist/index.js'
