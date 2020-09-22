@@ -5,6 +5,7 @@
     "test": "spago test --no-install"
   },
   "devDependencies": {
+    "@vercel/ncc": "^0.24.1",
     "eslint": "^7.6.0"
   },
   "dependencies": {
