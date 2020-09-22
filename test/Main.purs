@@ -10,7 +10,8 @@ import GitHub.Actions.ToolCache as ToolCache
 
 main :: Effect Unit
 main = do
+  Core.info "Starting test action..."
   void $ runExceptT do
     _ <- ToolCache.find' { toolName: "my-tool", versionSpec: "12.x" }
     ToolCache.find { toolName: "my-tool", versionSpec: "12.x", arch: Just "armv6" }
-  Core.setOutput { name: "did-it-work", value: "yes" }
+  Core.info "Done running test action."
