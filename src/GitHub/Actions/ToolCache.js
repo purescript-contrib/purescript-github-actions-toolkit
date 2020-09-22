@@ -49,9 +49,9 @@ exports.cacheFile4Impl = toolCache.cacheFile;
 
 exports.cacheFile5Impl = toolCache.cacheFile;
 
-exports.find2Impl = toolCache.findImpl;
+exports.find2Impl = toolCache.find;
 
-exports.find3Impl = toolCache.findImpl;
+exports.find3Impl = toolCache.find;
 
 exports.findAllVersions1Impl = toolCache.findAllVersions;
 
