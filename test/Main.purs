@@ -12,6 +12,7 @@ import Effect.Exception (message)
 import GitHub.Actions.Cache as Cache
 import GitHub.Actions.Core as Core
 import GitHub.Actions.Exec as Exec
+import GitHub.Actions.IO as IO
 import GitHub.Actions.ToolCache as ToolCache
 
 main :: Effect Unit
@@ -68,6 +69,22 @@ main = do
     _ <- Exec.exec' "ls"
     _ <- Exec.exec { command: "ls", args: Just [ "-a" ], options: Nothing }
     Exec.exec { command: "ls", args: Just [ "-a" ], options: Just (Exec.defaultExecOptions { delay = Just 10.0 })}
+
+  -- Tests for GitHub.Actions.IO
+  let
+    ioCb = case _ of
+      Left err -> Core.setFailed (message err)
+      Right _ -> Core.info "No errors in io"
+  runAff_ ioCb $ runExceptT do
+    _ <- Exec.exec' "touch test.txt"
+    _ <- IO.cp' { source: "test.txt", dest: "test1.txt" }
+    _ <- IO.cp { source: "test1.txt", dest: "test2.txt", options: Just (IO.defaultCopyOptions { force = Just true })}
+    _ <- IO.mv' { source: "test2.txt", dest: "test3.txt" }
+    _ <- IO.mv { source: "test3.txt", dest: "test4.txt", options: Just (IO.defaultMoveOptions { force = Just true }) }
+    _ <- IO.rmRF { inputPath: "test4.txt" }
+    _ <- IO.mkdirP { fsPath: "testDir" }
+    _ <- IO.which' "purs"
+    IO.which { tool: "purs", check: Just true }
 
   -- Tests for GitHub.Actions.ToolCache
   result <- runExceptT do
