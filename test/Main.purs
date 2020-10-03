@@ -6,9 +6,10 @@ import Control.Monad.Except.Trans (runExceptT)
 import Data.Either (Either(..))
 import Data.Maybe (Maybe(..))
 import Effect (Effect)
-import Effect.Aff (launchAff_)
+import Effect.Aff (launchAff_, runAff_)
 import Effect.Class (liftEffect)
 import Effect.Exception (message)
+import GitHub.Actions.Cache as Cache
 import GitHub.Actions.Core as Core
 import GitHub.Actions.ToolCache as ToolCache
 
@@ -42,6 +43,20 @@ main = do
     { name: "testGroup"
     , fn: liftEffect (pure unit)
     }
+
+  -- Tests for GitHub.Actions.Cache
+  let
+    cacheCb = case _ of
+      Left err -> Core.setFailed (message err)
+      Right _ -> Core.info "No errors in restoreCache"
+  runAff_ cacheCb $ runExceptT do
+    _ <- Cache.saveCache' { paths: [], key: "restorecache" }
+    _ <- Cache.saveCache { paths: [], key: "restorecache", options: Nothing }
+    _ <- Cache.saveCache { paths: [], key: "restorecache", options: Just (Cache.defaultUploadOptions { uploadConcurrency = Just 10.0 }) }
+    _ <- Cache.restoreCache' { paths: [], primaryKey: "restorecache" }
+    _ <- Cache.restoreCache { paths: [], primaryKey: "restorecache", restoreKeys: Nothing, options: Nothing }
+    _ <- Cache.restoreCache { paths: [], primaryKey: "restorecache", restoreKeys: Just [ "a" ], options: Nothing }
+    Cache.restoreCache { paths: [], primaryKey: "restorecaceh", restoreKeys: Just [ "a" ], options: Just (Cache.defaultDownloadOptions { useAzureSdk = Just true, downloadConcurrency = Just true, timeoutInMs = Just 10.0 })}
 
   -- Tests for GitHub.Actions.ToolCache
   result <- runExceptT do
