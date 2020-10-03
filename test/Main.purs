@@ -11,6 +11,7 @@ import Effect.Class (liftEffect)
 import Effect.Exception (message)
 import GitHub.Actions.Cache as Cache
 import GitHub.Actions.Core as Core
+import GitHub.Actions.Exec as Exec
 import GitHub.Actions.ToolCache as ToolCache
 
 main :: Effect Unit
@@ -57,6 +58,16 @@ main = do
     _ <- Cache.restoreCache { paths: [], primaryKey: "restorecache", restoreKeys: Nothing, options: Nothing }
     _ <- Cache.restoreCache { paths: [], primaryKey: "restorecache", restoreKeys: Just [ "a" ], options: Nothing }
     Cache.restoreCache { paths: [], primaryKey: "restorecaceh", restoreKeys: Just [ "a" ], options: Just (Cache.defaultDownloadOptions { useAzureSdk = Just true, downloadConcurrency = Just true, timeoutInMs = Just 10.0 })}
+
+  -- Tests for GitHub.Actions.Exec
+  let
+    execCb = case _ of
+      Left err -> Core.setFailed (message err)
+      Right _ -> Core.info "No errors in exec"
+  runAff_ execCb $ runExceptT do
+    _ <- Exec.exec' "ls"
+    _ <- Exec.exec { command: "ls", args: Just [ "-a" ], options: Nothing }
+    Exec.exec { command: "ls", args: Just [ "-a" ], options: Just (Exec.defaultExecOptions { delay = Just 10.0 })}
 
   -- Tests for GitHub.Actions.ToolCache
   result <- runExceptT do
