@@ -87,9 +87,34 @@ main = do
     IO.which { tool: "purs", check: Just true }
 
   -- Tests for GitHub.Actions.ToolCache
+  let
+    toolCacheCb = case _ of
+      Left err -> Core.setFailed (message err)
+      Right _ -> Core.info "No errors in ToolCache"
+  runAff_ toolCacheCb $ runExceptT do
+    pursPath <- ToolCache.downloadTool' "https://github.com/purescript/purescript/releases/download/v0.13.8/linux64.tar.gz"
+    _ <- ToolCache.downloadTool { url: "https://github.com/purescript/purescript/releases/download/v0.13.8/linux64.tar.gz", dest: Just "~/purspath", auth: Nothing }
+    _ <- ToolCache.downloadTool { url: "https://github.com/purescript/purescript/releases/download/v0.13.8/linux64.tar.gz", dest: Just "~/purspath", auth: Just "blahhh" }
+    extractedPurs <- ToolCache.extractTar' pursPath
+    _ <- ToolCache.extractTar { file: pursPath, dest: Just "/extractedpurs", flags: Nothing }
+    _ <- ToolCache.extractTar { file: pursPath, dest: Just "/extractedpurs", flags: Just [] }
+    zipPath <- ToolCache.downloadTool' "https://github.com/purescript/purescript/archive/v0.13.8.zip"
+    _ <- ToolCache.extractZip' zipPath
+    _ <- ToolCache.extractZip { file: zipPath, dest: Just "/extractedpurszip" }
+    _ <- ToolCache.cacheDir' { sourceDir: extractedPurs, tool: "purs", version: "v0.13.8" }
+    _ <- ToolCache.cacheDir { sourceDir: extractedPurs, tool: "purs", version: "v0.13.8", arch: Just "arm" }
+    _ <- ToolCache.cacheFile' { sourceFile: pursPath, targetFile: "testtarget", tool: "purs", version: "v0.13.8" }
+    _ <- ToolCache.cacheFile { sourceFile: pursPath, targetFile: "testtarget", tool: "purs", version: "v0.13.8", arch: Just "arm" }
+    pursManifest <- ToolCache.getManifestFromRepo' { owner: "purescript", repo: "purescript" }
+    _ <- ToolCache.getManifestFromRepo { owner: "purescript", repo: "purescript", auth: Just "blah", branch: Just "master" }
+    _ <- ToolCache.findFromManifest { versionSpec: "v0.13.8", stable: true, manifest: pursManifest, archFilter: Nothing }
+    ToolCache.findFromManifest { versionSpec: "v0.13.8", stable: true, manifest: pursManifest, archFilter: Just "arm" }
+
   result <- runExceptT do
     _ <- ToolCache.find' { toolName: "my-tool", versionSpec: "12.x" }
-    ToolCache.find { toolName: "my-tool", versionSpec: "12.x", arch: Just "armv6" }
+    _ <- ToolCache.find { toolName: "my-tool", versionSpec: "12.x", arch: Just "armv6" }
+    _ <- ToolCache.findAllVersions' "purs"
+    ToolCache.findAllVersions { toolName: "purs", arch: Just "arm" }
   case result of
     Left err -> Core.setFailed (message err)
     Right _ -> Core.info "No errors in find"
