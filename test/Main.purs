@@ -41,7 +41,7 @@ main = do
   _ <- Core.getState "teststate"
   launchAff_ $ Core.group
     { name: "testGroup"
-    , fn: liftEffect (pure unit)
+    , fn: liftEffect (Core.info "In testGroup")
     }
 
   -- Tests for GitHub.Actions.Cache
