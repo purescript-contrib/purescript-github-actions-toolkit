@@ -111,11 +111,11 @@ foreign import isDebugImpl :: Effect Boolean
 isDebug :: Effect Boolean
 isDebug = isDebugImpl
 
-foreign import debugImpl :: String -> Effect Unit
+foreign import debugImpl :: EffectFn1 String Unit
 
 -- | Writes debug message to user log
 debug :: String -> Effect Unit
-debug = debugImpl
+debug = runEffectFn1 debugImpl
 
 foreign import errorImpl :: EffectFn1 String Unit
 
