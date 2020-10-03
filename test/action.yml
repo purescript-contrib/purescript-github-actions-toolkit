@@ -3,3 +3,10 @@ description: 'Test out bindings in this library'
 runs:
   using: 'node12'
   main: '../dist/index.js'
+inputs:
+  testinput:
+    description: 'Test input for test action'
+    required: true
+outputs:
+  testoutput:
+    description: 'Test output for test action'
