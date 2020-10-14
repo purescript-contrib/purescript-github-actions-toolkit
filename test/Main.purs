@@ -66,9 +66,9 @@ main = do
       Left err -> Core.setFailed (message err)
       Right _ -> Core.info "No errors in exec"
   runAff_ execCb $ runExceptT do
-    _ <- Exec.exec' "ls"
-    _ <- Exec.exec { command: "ls", args: Just [ "-a" ], options: Nothing }
-    Exec.exec { command: "ls", args: Just [ "-a" ], options: Just (Exec.defaultExecOptions { delay = Just 10.0 })}
+    _ <- Exec.exec' "pwd"
+    _ <- Exec.exec { command: "pwd", args: Just [ "-L" ], options: Nothing }
+    Exec.exec { command: "pwd", args: Just [ "-L" ], options: Just (Exec.defaultExecOptions { delay = Just 10.0 })}
 
   -- Tests for GitHub.Actions.IO
   let
