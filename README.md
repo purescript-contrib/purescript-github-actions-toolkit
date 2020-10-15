@@ -82,7 +82,7 @@ You can find documentation for all of the functions in this library in [the docs
 GitHub Actions Toolkit documentation is stored in a few places:
 
 1. Module documentation is [published on Pursuit](https://pursuit.purescript.org/packages/purescript-github-actions-toolkit).
-2. Written documentation and [the changelog](./docs/CHANGELOG.md) are kept in [the docs directory](./docs).
+2. Written documentation is in [the docs directory](./docs).
 
 For a usage example, see the [Hello World PureScript Action template](https://github.com/colinwahl/hello-world-purescript-action).  For a real-world action that uses these bindings, see [Setup PureScript](https://github.com/purescript-contrib/setup-purescript).
 
@@ -97,6 +97,6 @@ You can contribute to GitHub Actions Toolkit in several ways:
 
 1. If you encounter a problem or have a question, please [open an issue](https://github.com/purescript-contrib/purescript-github-actions-toolkit/issues). We'll do our best to work with you to resolve or answer it.
 
-2. If you would like to contribute code, tests, or documentation, please [read the contributor guide](./.github/CONTRIBUTING.md). It's a short, helpful introduction to contributing to this library, including development instructions.
+2. If you would like to contribute code, tests, or documentation, please [read the contributor guide](CONTRIBUTING.md). It's a short, helpful introduction to contributing to this library, including development instructions.
 
 3. If you have written a library, tutorial, guide, or other resource based on this package, please share it on the [PureScript Discourse](https://discourse.purescript.org)! Writing libraries and learning resources are a great way to help this library succeed.
