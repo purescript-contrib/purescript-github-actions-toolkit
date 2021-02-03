@@ -10,6 +10,8 @@ New features:
 
 Bugfixes:
 
+- GitHub `@actions/*` dependencies upgraded for post-October 2020 compatibility @jisantuc
+
 Other improvements:
 
 ## [0.0.0] - 2020-01-01
