@@ -12,4 +12,15 @@ Bugfixes:
 
 Other improvements:
 
+## [v0.2.1] - 2021-02-03
+
+Bugfixes:
+
+- GitHub `@actions/*` dependencies upgraded for post-October 2020 compatibility @jisantuc
+
+Other improvements:
+
+- Added a test which exercises all existing bindings to @actions/* libraries @colinwahl
+- Updated the changelog and the contributing docs to align with the Contributors' library guidelines @maxdeviant
+
 ## [0.0.0] - 2020-01-01
