@@ -10,7 +10,7 @@ New features:
 
 Bugfixes:
 
-- GitHub `@actions/*` dependencies upgraded for post-October 2020 compatibility. This affects the functionality of `addPath`, which is [formally deprecated](https://github.blog/changelog/2020-10-01-github-actions-deprecating-set-env-and-add-path-commands/) to avoid a security vulnerability. [#13](https://github.com/purescript-contrib/purescript-github-actions-toolkit/pull/13) @jisantuc
+- GitHub `@actions/*` dependencies upgraded for post-October 2020 compatibility. This affects the functionality of `addPath`, which is [formally deprecated](https://github.blog/changelog/2020-10-01-github-actions-deprecating-set-env-and-add-path-commands/) to avoid a security vulnerability. (#13 by @jisantuc)
 
 Other improvements:
 
