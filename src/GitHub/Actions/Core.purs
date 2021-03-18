@@ -31,7 +31,6 @@ import Effect (Effect)
 import Effect.Aff (Aff)
 import Effect.Exception (Error)
 import Effect.Uncurried (EffectFn1, EffectFn2, runEffectFn1, runEffectFn2)
-import Prim.TypeError (class Warn, Text)
 
 -- | Interface for getInput options
 -- | required: Whether the input is required. If required and not present, will throw
@@ -57,9 +56,7 @@ setSecret = runEffectFn1 setSecretImpl
 foreign import addPathImpl :: EffectFn1 String Unit
 
 -- | Prepends input path to the PATH (for this action and future actions)
-addPath ::
-  Warn (Text "addPath is deprecated due to a security vulnerability and will be removed in the next release.") =>
-  String -> Effect Unit
+addPath :: String -> Effect Unit
 addPath = runEffectFn1 addPathImpl
 
 foreign import getInput1Impl :: EffectFn1 String String
