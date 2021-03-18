@@ -14,14 +14,14 @@
         "output"
     ],
     "dependencies": {
-        "purescript-aff": "^v5.1.2",
-        "purescript-aff-promise": "^v2.1.0",
-        "purescript-effect": "^v2.0.1",
-        "purescript-foreign-object": "^v2.0.3",
-        "purescript-node-buffer": "^v6.0.0",
-        "purescript-node-path": "^v3.0.0",
-        "purescript-node-streams": "^v4.0.1",
-        "purescript-nullable": "^v4.1.1",
-        "purescript-transformers": "^v4.2.0"
+        "purescript-aff": "^v6.0.0",
+        "purescript-aff-promise": "^v3.0.0",
+        "purescript-effect": "^v3.0.0",
+        "purescript-foreign-object": "^v3.0.0",
+        "purescript-node-buffer": "^v7.0.0",
+        "purescript-node-path": "^v4.0.0",
+        "purescript-node-streams": "^v5.0.0",
+        "purescript-nullable": "^v5.0.0",
+        "purescript-transformers": "^v5.0.0"
     }
 }
