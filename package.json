@@ -1,12 +1,12 @@
 {
   "private": true,
   "scripts": {
-    "build": "eslint src && spago build --purs-args '--censor-lib --strict --censor-codes=UserDefinedWarning'",
+    "build": "eslint src && spago build --purs-args '--censor-lib --strict'",
     "test": "spago test --no-install"
   },
   "devDependencies": {
-    "@vercel/ncc": "^0.24.1",
-    "eslint": "^7.6.0"
+    "@vercel/ncc": "^0.27.0",
+    "eslint": "^7.22.0"
   },
   "dependencies": {
     "@actions/cache": "^1.0.6",
