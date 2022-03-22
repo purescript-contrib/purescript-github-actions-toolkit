@@ -1,4 +1,3 @@
-"use strict";
 import exec from "@actions/exec";
 export const exec1Impl = exec.exec;
 export const exec2Impl = exec.exec;

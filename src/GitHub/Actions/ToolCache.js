@@ -1,4 +1,3 @@
-"use strict";
 import toolCache from "@actions/tool-cache";
 export const downloadTool1Impl = toolCache.downloadTool;
 export const downloadTool2Impl = toolCache.downloadTool;

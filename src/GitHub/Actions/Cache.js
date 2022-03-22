@@ -1,4 +1,3 @@
-"use strict";
 import cache from "@actions/cache";
 export const restoreCache2Impl = cache.restoreCache;
 export const restoreCache3Impl = cache.restoreCache;

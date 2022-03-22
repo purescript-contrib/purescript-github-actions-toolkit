@@ -1,4 +1,3 @@
-"use strict";
 import io from "@actions/io";
 export const cp2Impl = io.cp;
 export const cp3Impl = io.cp;

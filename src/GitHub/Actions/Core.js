@@ -1,4 +1,3 @@
-"use strict";
 import core from "@actions/core";
 export const exportVariableImpl = core.exportVariable;
 export const setSecretImpl = core.setSecret;
