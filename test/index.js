@@ -1,5 +1,5 @@
 "use strict";
 
-var Test = require("../output/index");
+import Test from "../output/index";
 
 Test.main();

@@ -1,38 +1,20 @@
 "use strict";
-const core = require("@actions/core");
-
-exports.exportVariableImpl = core.exportVariable;
-
-exports.setSecretImpl = core.setSecret;
-
-exports.addPathImpl = core.addPath;
-
-exports.getInput1Impl = core.getInput;
-
-exports.getInput2Impl = core.getInput;
-
-exports.setOutputImpl = core.setOutput;
-
-exports.setCommandEchoImpl = core.setCommandEcho;
-
-exports.setFailedImpl = core.setFailed;
-
-exports.isDebugImpl = core.isDebug;
-
-exports.debugImpl = core.debug;
-
-exports.errorImpl = core.error;
-
-exports.warningImpl = core.warning;
-
-exports.infoImpl = core.info;
-
-exports.startGroupImpl = core.startGroup;
-
-exports.endGroupImpl = core.endGroup;
-
-exports.saveStateImpl = core.saveState;
-
-exports.getStateImpl = core.getState;
-
-exports.groupImpl = core.group;
+import core from "@actions/core";
+export var exportVariableImpl = core.exportVariable;
+export var setSecretImpl = core.setSecret;
+export var addPathImpl = core.addPath;
+export var getInput1Impl = core.getInput;
+export var getInput2Impl = core.getInput;
+export var setOutputImpl = core.setOutput;
+export var setCommandEchoImpl = core.setCommandEcho;
+export var setFailedImpl = core.setFailed;
+export var isDebugImpl = core.isDebug;
+export var debugImpl = core.debug;
+export var errorImpl = core.error;
+export var warningImpl = core.warning;
+export var infoImpl = core.info;
+export var startGroupImpl = core.startGroup;
+export var endGroupImpl = core.endGroup;
+export var saveStateImpl = core.saveState;
+export var getStateImpl = core.getState;
+export var groupImpl = core.group;

@@ -1,11 +1,10 @@
 "use strict";
-const exec = require("@actions/exec");
+import exec from "@actions/exec";
+export var exec1Impl = exec.exec;
+export var exec2Impl = exec.exec;
 
-exports.exec1Impl = exec.exec;
+export function exec2Impl2(command, options) {
+  return exec.exec(command, undefined, options);
+}
 
-exports.exec2Impl = exec.exec;
-
-exports.exec2Impl2 = (command, options) =>
-  exec.exec(command, undefined, options);
-
-exports.exec3Impl = exec.exec;
+export var exec3Impl = exec.exec;

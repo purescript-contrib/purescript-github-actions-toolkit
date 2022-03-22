@@ -1,71 +1,54 @@
 "use strict";
-const toolCache = require("@actions/tool-cache");
+import toolCache from "@actions/tool-cache";
+export var downloadTool1Impl = toolCache.downloadTool;
+export var downloadTool2Impl = toolCache.downloadTool;
 
-exports.downloadTool1Impl = toolCache.downloadTool;
+export function downloadTool2Impl2(url, auth) {
+  return toolCache.downloadTool(url, undefined, auth);
+}
 
-exports.downloadTool2Impl = toolCache.downloadTool;
+export var downloadTool3Impl = toolCache.downloadTool;
+export var extract7z1Impl = toolCache.extract7z;
+export var extract7z2Impl = toolCache.extract7z;
 
-exports.downloadTool2Impl2 = (url, auth) =>
-  toolCache.downloadTool(url, undefined, auth);
+export function extract7z2Impl2(file, _7cPath) {
+  return toolCache.extract7z(file, undefined, _7cPath);
+}
 
-exports.downloadTool3Impl = toolCache.downloadTool;
+export var extract7z3Impl = toolCache.extract7z;
+export var extractTar1Impl = toolCache.extractTar;
+export var extractTar2Impl = toolCache.extractTar;
 
-exports.extract7z1Impl = toolCache.extract7z;
+export function extractTar2Impl2(file, flags) {
+  return toolCache.extractTar(file, undefined, flags);
+}
 
-exports.extract7z2Impl = toolCache.extract7z;
+export var extractTar3Impl = toolCache.extractTar;
+export var extractXar1Impl = toolCache.extractXar;
+export var extractXar2Impl = toolCache.extractXar;
 
-exports.extract7z2Impl2 = (file, _7cPath) =>
-  toolCache.extract7z(file, undefined, _7cPath);
+export function extractXar2Impl2(file, flags) {
+  return toolCache.extractXar(file, undefined, flags);
+}
 
-exports.extract7z3Impl = toolCache.extract7z;
+export var extractXar3Impl = toolCache.extractXar;
+export var extractZip1Impl = toolCache.extractZip;
+export var extractZip2Impl = toolCache.extractZip;
+export var cacheDir3Impl = toolCache.cacheDir;
+export var cacheDir4Impl = toolCache.cacheDir;
+export var cacheFile4Impl = toolCache.cacheFile;
+export var cacheFile5Impl = toolCache.cacheFile;
+export var find2Impl = toolCache.find;
+export var find3Impl = toolCache.find;
+export var findAllVersions1Impl = toolCache.findAllVersions;
+export var findAllVersions2Impl = toolCache.findAllVersions;
+export var getManifestFromRepo2Impl = toolCache.getManifestFromRepo;
+export var getManifestFromRepo3Impl = toolCache.getManifestFromRepo;
 
-exports.extractTar1Impl = toolCache.extractTar;
+export function getManifestFromRepo3Impl2(owner, repo, branch) {
+  return toolCache.getManfiestFromRepo(owner, repo, undefined, branch);
+}
 
-exports.extractTar2Impl = toolCache.extractTar;
-
-exports.extractTar2Impl2 = (file, flags) =>
-  toolCache.extractTar(file, undefined, flags);
-
-exports.extractTar3Impl = toolCache.extractTar;
-
-exports.extractXar1Impl = toolCache.extractXar;
-
-exports.extractXar2Impl = toolCache.extractXar;
-
-exports.extractXar2Impl2 = (file, flags) =>
-  toolCache.extractXar(file, undefined, flags);
-
-exports.extractXar3Impl = toolCache.extractXar;
-
-exports.extractZip1Impl = toolCache.extractZip;
-
-exports.extractZip2Impl = toolCache.extractZip;
-
-exports.cacheDir3Impl = toolCache.cacheDir;
-
-exports.cacheDir4Impl = toolCache.cacheDir;
-
-exports.cacheFile4Impl = toolCache.cacheFile;
-
-exports.cacheFile5Impl = toolCache.cacheFile;
-
-exports.find2Impl = toolCache.find;
-
-exports.find3Impl = toolCache.find;
-
-exports.findAllVersions1Impl = toolCache.findAllVersions;
-
-exports.findAllVersions2Impl = toolCache.findAllVersions;
-
-exports.getManifestFromRepo2Impl = toolCache.getManifestFromRepo;
-
-exports.getManifestFromRepo3Impl = toolCache.getManifestFromRepo;
-
-exports.getManifestFromRepo3Impl2 = (owner, repo, branch) =>
-  toolCache.getManfiestFromRepo(owner, repo, undefined, branch);
-
-exports.getManifestFromRepo4Impl = toolCache.getManifestFromRepo;
-
-exports.findFromManifest3Impl = toolCache.findFromManifest;
-
-exports.findFromManifest4Impl = toolCache.findFromManifest;
+export var getManifestFromRepo4Impl = toolCache.getManifestFromRepo;
+export var findFromManifest3Impl = toolCache.findFromManifest;
+export var findFromManifest4Impl = toolCache.findFromManifest;
