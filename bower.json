@@ -1,27 +1,27 @@
 {
-    "name": "purescript-github-actions-toolkit",
-    "license": [
-        "MIT"
-    ],
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/purescript-contrib/purescript-github-actions-toolkit"
-    },
-    "ignore": [
-        "**/.*",
-        "node_modules",
-        "bower_components",
-        "output"
-    ],
-    "dependencies": {
-        "purescript-aff": "^v6.0.0",
-        "purescript-aff-promise": "^v3.0.0",
-        "purescript-effect": "^v3.0.0",
-        "purescript-foreign-object": "^v3.0.0",
-        "purescript-node-buffer": "^v7.0.0",
-        "purescript-node-path": "^v4.0.0",
-        "purescript-node-streams": "^v5.0.0",
-        "purescript-nullable": "^v5.0.0",
-        "purescript-transformers": "^v5.0.0"
-    }
+  "name": "purescript-github-actions-toolkit",
+  "license": [
+    "MIT"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/purescript-contrib/purescript-github-actions-toolkit"
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "output"
+  ],
+  "dependencies": {
+    "purescript-aff": "main",
+    "purescript-aff-promise": "master",
+    "purescript-effect": "master",
+    "purescript-foreign-object": "master",
+    "purescript-node-buffer": "master",
+    "purescript-node-path": "master",
+    "purescript-node-streams": "master",
+    "purescript-nullable": "main",
+    "purescript-transformers": "master"
+  }
 }

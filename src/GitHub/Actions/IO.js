@@ -1,18 +1,9 @@
-"use strict";
-const io = require("@actions/io");
-
-exports.cp2Impl = io.cp;
-
-exports.cp3Impl = io.cp;
-
-exports.mv2Impl = io.mv;
-
-exports.mv3Impl = io.mv;
-
-exports.rmRFImpl = io.rmRF;
-
-exports.mkdirPImpl = io.mkdirP;
-
-exports.which2Impl = io.which;
-
-exports.which3Impl = io.which;
+import io from "@actions/io";
+export const cp2Impl = io.cp;
+export const cp3Impl = io.cp;
+export const mv2Impl = io.mv;
+export const mv3Impl = io.mv;
+export const rmRFImpl = io.rmRF;
+export const mkdirPImpl = io.mkdirP;
+export const which2Impl = io.which;
+export const which3Impl = io.which;

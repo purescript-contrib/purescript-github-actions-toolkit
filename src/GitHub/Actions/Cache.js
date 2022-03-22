@@ -1,15 +1,11 @@
-"use strict";
-const cache = require("@actions/cache");
+import cache from "@actions/cache";
+export const restoreCache2Impl = cache.restoreCache;
+export const restoreCache3Impl = cache.restoreCache;
 
-exports.restoreCache2Impl = cache.restoreCache;
+export function restoreCache3Impl2(paths, primaryKey, options) {
+  return cache.restoreCache(paths, primaryKey, undefined, options);
+}
 
-exports.restoreCache3Impl = cache.restoreCache;
-
-exports.restoreCache3Impl2 = (paths, primaryKey, options) =>
-  cache.restoreCache(paths, primaryKey, undefined, options);
-
-exports.restoreCache4Impl = cache.restoreCache;
-
-exports.saveCache2Impl = cache.saveCache;
-
-exports.saveCache3Impl = cache.saveCache;
+export const restoreCache4Impl = cache.restoreCache;
+export const saveCache2Impl = cache.saveCache;
+export const saveCache3Impl = cache.saveCache;

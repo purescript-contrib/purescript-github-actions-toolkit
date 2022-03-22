@@ -11,6 +11,8 @@ jobs:
 
       - name: Set up PureScript toolchain
         uses: purescript-contrib/setup-purescript@main
+        with:
+          purescript: "unstable"
 
       - name: Cache PureScript dependencies
         uses: actions/cache@v2
@@ -21,9 +23,9 @@ jobs:
             output
 
       - name: Set up Node toolchain
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: "12.x"
+          node-version: "14.x"
 
       - name: Cache NPM dependencies
         uses: actions/cache@v2
@@ -44,9 +46,15 @@ jobs:
         run: npm run build
 
       - name: Build and bundle tests
-        run: spago bundle-module --main Test.Main --to output/index.js && ./node_modules/@vercel/ncc/dist/ncc/cli.js build --minify test/index.js
+        run: ./node_modules/@vercel/ncc/dist/ncc/cli.js build --minify test/index.js
 
       - name: Run tests
         uses: ./test
         with:
           testinput: test
+
+      - name: Verify Bower & Pulp
+        run: |
+          npm install bower pulp@16.0.0-0
+          npx bower install
+          npx pulp build -- --censor-lib --strict

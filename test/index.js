@@ -1,5 +1,3 @@
-"use strict";
+import { main } from "../output/Test.Main/index.js";
 
-var Test = require("../output/index");
-
-Test.main();
+main();
