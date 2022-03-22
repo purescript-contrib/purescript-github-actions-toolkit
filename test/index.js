@@ -1,3 +1,3 @@
-import Test from "../output/index";
+import { main } from "../output/Test.Main/index.js";
 
-Test.main();
+main();
