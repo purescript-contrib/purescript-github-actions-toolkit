@@ -1,10 +1,10 @@
 "use strict";
 import io from "@actions/io";
-export var cp2Impl = io.cp;
-export var cp3Impl = io.cp;
-export var mv2Impl = io.mv;
-export var mv3Impl = io.mv;
-export var rmRFImpl = io.rmRF;
-export var mkdirPImpl = io.mkdirP;
-export var which2Impl = io.which;
-export var which3Impl = io.which;
+export const cp2Impl = io.cp;
+export const cp3Impl = io.cp;
+export const mv2Impl = io.mv;
+export const mv3Impl = io.mv;
+export const rmRFImpl = io.rmRF;
+export const mkdirPImpl = io.mkdirP;
+export const which2Impl = io.which;
+export const which3Impl = io.which;
