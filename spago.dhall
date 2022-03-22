@@ -18,5 +18,6 @@
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]
 , license = "MIT"
-, repository = "https://github.com/purescript-contrib/purescript-github-actions-toolkit"
+, repository =
+    "https://github.com/purescript-contrib/purescript-github-actions-toolkit"
 }
