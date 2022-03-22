@@ -15,7 +15,7 @@
   ],
   "dependencies": {
     "purescript-aff": "main",
-    "purescript-aff-promise": "^v3.0.0",
+    "purescript-aff-promise": "master",
     "purescript-effect": "master",
     "purescript-foreign-object": "master",
     "purescript-node-buffer": "master",
