@@ -2,12 +2,17 @@
 , dependencies =
   [ "aff"
   , "aff-promise"
+  , "control"
   , "effect"
+  , "either"
+  , "exceptions"
   , "foreign-object"
+  , "maybe"
   , "node-buffer"
   , "node-path"
   , "node-streams"
   , "nullable"
+  , "prelude"
   , "transformers"
   ]
 , packages = ./packages.dhall
