@@ -5,13 +5,17 @@ Notable changes to this project are documented in this file. The format is based
 ## [Unreleased]
 
 Breaking changes:
-- Migrate FFI to ES modules (#17 by @JordanMartinez)
 
 New features:
 
 Bugfixes:
 
 Other improvements:
+
+## [v0.4.0](https://github.com/purescript-contrib/purescript-github-actions-toolkit/releases/tag/v0.4.0) - 2022-04-27
+
+Breaking changes:
+- Migrate FFI to ES modules (#17 by @JordanMartinez)
 
 ## [v0.3.0](https://github.com/purescript-contrib/purescript-github-actions-toolkit/releases/tag/v0.3.0) - 2021-04-18
 
