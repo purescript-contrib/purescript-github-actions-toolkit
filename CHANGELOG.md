@@ -15,7 +15,7 @@ Other improvements:
 ## [v0.5.0](https://github.com/purescript-contrib/purescript-github-actions-toolkit/releases/tag/v0.5.0) - 2022-04-29
 
 Breaking changes:
-- Migrate FFI to ES modules (#17 and #18 by @JordanMartinez)
+- Migrate FFI to ES modules (#17 and #19 by @JordanMartinez)
 
 ## [v0.4.0](https://github.com/purescript-contrib/purescript-github-actions-toolkit/releases/tag/v0.4.0) - 2022-04-27
 
