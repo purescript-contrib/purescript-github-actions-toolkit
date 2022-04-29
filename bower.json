@@ -20,7 +20,7 @@
     "purescript-foreign-object": "^4.0.0",
     "purescript-node-buffer": "^8.0.0",
     "purescript-node-path": "^5.0.0",
-    "purescript-node-streams": "^6.0.0",
+    "purescript-node-streams": "^7.0.0",
     "purescript-nullable": "^6.0.0",
     "purescript-transformers": "^6.0.0"
   }
