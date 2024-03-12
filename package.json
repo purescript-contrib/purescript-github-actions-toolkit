@@ -1,18 +1,18 @@
 {
   "private": true,
   "scripts": {
-    "build": "eslint src && spago build --purs-args '--censor-lib --strict'",
+    "build": "eslint src && spago build",
     "test": "spago test --no-install"
   },
   "devDependencies": {
-    "@vercel/ncc": "^0.27.0",
-    "eslint": "^7.22.0"
+    "@vercel/ncc": "^0.38.1",
+    "eslint": "^8.57.0"
   },
   "dependencies": {
-    "@actions/cache": "^1.0.6",
-    "@actions/core": "^1.2.6",
-    "@actions/exec": "^1.0.4",
-    "@actions/io": "^1.0.2",
-    "@actions/tool-cache": "^1.6.1"
+    "@actions/cache": "^3.2.4",
+    "@actions/core": "^1.10.1",
+    "@actions/exec": "^1.1.1",
+    "@actions/io": "^1.1.3",
+    "@actions/tool-cache": "^2.0.1"
   }
 }
