@@ -11,3 +11,7 @@ bower_components
 node_modules
 package-lock.json
 *.lock
+
+test1.txt
+test.txt
+dist/
