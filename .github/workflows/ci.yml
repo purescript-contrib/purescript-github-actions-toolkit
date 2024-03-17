@@ -10,9 +10,11 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Set up PureScript toolchain
-        uses: purescript-contrib/setup-purescript@main
+        # uses: purescript-contrib/setup-purescript@main
+        uses: srghma/setup-purescript@main
         with:
           purescript: "unstable"
+          spago: "unstable"
 
       - name: Cache PureScript dependencies
         uses: actions/cache@v2
@@ -41,10 +43,6 @@ jobs:
 
       - name: Install NPM dependencies
         run: npm install
-
-      # delete me after updating purescript-contrib/setup-purescript@main
-      - name: Install latest spago
-        run: npm install -g spago@next
 
       - name: Build the project
         run: npm run build

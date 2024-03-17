@@ -5,7 +5,6 @@ package:
     - aff-promise
     - control
     - effect
-    - either
     - exceptions
     - foreign-object
     - maybe
@@ -17,7 +16,8 @@ package:
     - transformers
   test:
     main: Test.Main
-    dependencies: []
+    dependencies:
+      - either
 workspace:
   package_set:
     registry: 50.4.0
