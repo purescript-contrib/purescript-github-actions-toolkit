@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "build": "eslint src && spago build --pedantic-packages",
+    "build": "eslint src && spago build --strict --censor-stats --pedantic-packages",
     "test": "spago test --no-install"
   },
   "devDependencies": {

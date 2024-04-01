@@ -9,17 +9,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up PureScript toolchain
-        # uses: purescript-contrib/setup-purescript@main
-        uses: srghma/setup-purescript@main
-        with:
-          purescript: "unstable"
-          spago: "unstable"
-
       - name: Cache PureScript dependencies
         uses: actions/cache@v2
         with:
-          key: ${{ runner.os }}-spago-${{ hashFiles('**/*.dhall') }}
+          key: ${{ runner.os }}-spago-${{ hashFiles('**/spago.yaml') }}
           path: |
             .spago
             output
@@ -40,6 +33,9 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
+
+      - name: Install NPM dependencies
+        run: npm install -g spago@next purescript@latest
 
       - name: Install NPM dependencies
         run: npm install
