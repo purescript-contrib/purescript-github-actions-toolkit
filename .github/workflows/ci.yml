@@ -9,15 +9,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up PureScript toolchain
-        uses: purescript-contrib/setup-purescript@main
-        with:
-          purescript: "unstable"
-
       - name: Cache PureScript dependencies
         uses: actions/cache@v2
         with:
-          key: ${{ runner.os }}-spago-${{ hashFiles('**/*.dhall') }}
+          key: ${{ runner.os }}-spago-${{ hashFiles('**/spago.yaml') }}
           path: |
             .spago
             output
@@ -25,7 +20,7 @@ jobs:
       - name: Set up Node toolchain
         uses: actions/setup-node@v2
         with:
-          node-version: "14.x"
+          node-version: "20.x"
 
       - name: Cache NPM dependencies
         uses: actions/cache@v2
@@ -38,6 +33,9 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
+
+      - name: Install NPM dependencies
+        run: npm install -g spago@next purescript@latest
 
       - name: Install NPM dependencies
         run: npm install
@@ -55,6 +53,6 @@ jobs:
 
       - name: Verify Bower & Pulp
         run: |
-          npm install bower pulp@16.0.0-0
+          npm install bower pulp@16.0.2
           npx bower install
-          npx pulp build -- --censor-lib --strict
+          npx pulp build

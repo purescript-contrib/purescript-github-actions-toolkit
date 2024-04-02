@@ -1,0 +1,24 @@
+package:
+  name: github-actions-toolkit
+  dependencies:
+    - aff
+    - aff-promise
+    - control
+    - effect
+    - exceptions
+    - foreign-object
+    - maybe
+    - node-buffer
+    - node-path
+    - node-streams
+    - nullable
+    - prelude
+    - transformers
+  test:
+    main: Test.Main
+    dependencies:
+      - either
+workspace:
+  package_set:
+    registry: 50.4.0
+  extra_packages: {}
