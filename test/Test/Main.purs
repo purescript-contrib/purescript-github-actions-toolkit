@@ -58,7 +58,7 @@ main = do
     _ <- Cache.restoreCache' { paths: [], primaryKey: "restorecache" }
     _ <- Cache.restoreCache { paths: [], primaryKey: "restorecache", restoreKeys: Nothing, options: Nothing }
     _ <- Cache.restoreCache { paths: [], primaryKey: "restorecache", restoreKeys: Just [ "a" ], options: Nothing }
-    Cache.restoreCache { paths: [], primaryKey: "restorecaceh", restoreKeys: Just [ "a" ], options: Just (Cache.defaultDownloadOptions { useAzureSdk = Just true, downloadConcurrency = Just true, timeoutInMs = Just 10.0 })}
+    Cache.restoreCache { paths: [], primaryKey: "restorecaceh", restoreKeys: Just [ "a" ], options: Just (Cache.defaultDownloadOptions { useAzureSdk = Just true, downloadConcurrency = Just true, timeoutInMs = Just 10.0 }) }
 
   -- Tests for GitHub.Actions.Exec
   let
@@ -68,7 +68,7 @@ main = do
   runAff_ execCb $ runExceptT do
     _ <- Exec.exec' "pwd"
     _ <- Exec.exec { command: "pwd", args: Just [ "-L" ], options: Nothing }
-    Exec.exec { command: "pwd", args: Just [ "-L" ], options: Just (Exec.defaultExecOptions { delay = Just 10.0 })}
+    Exec.exec { command: "pwd", args: Just [ "-L" ], options: Just (Exec.defaultExecOptions { delay = Just 10.0 }) }
 
   -- Tests for GitHub.Actions.IO
   let
@@ -78,7 +78,7 @@ main = do
   runAff_ ioCb $ runExceptT do
     _ <- Exec.exec' "touch test.txt"
     _ <- IO.cp' { source: "test.txt", dest: "test1.txt" }
-    _ <- IO.cp { source: "test1.txt", dest: "test2.txt", options: Just (IO.defaultCopyOptions { force = Just true })}
+    _ <- IO.cp { source: "test1.txt", dest: "test2.txt", options: Just (IO.defaultCopyOptions { force = Just true }) }
     _ <- IO.mv' { source: "test2.txt", dest: "test3.txt" }
     _ <- IO.mv { source: "test3.txt", dest: "test4.txt", options: Just (IO.defaultMoveOptions { force = Just true }) }
     _ <- IO.rmRF { inputPath: "test4.txt" }
