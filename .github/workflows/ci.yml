@@ -1,58 +1,37 @@
 name: CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+
+      - name: Set up a PureScript toolchain
+        uses: purescript-contrib/setup-purescript@main
+        with:
+          purescript: "latest"
+          purs-tidy: "latest"
+          spago: "unstable"
 
       - name: Cache PureScript dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
-          key: ${{ runner.os }}-spago-${{ hashFiles('**/spago.yaml') }}
+          key: ${{ runner.os }}-spago-${{ hashFiles('**/spago.lock') }}
           path: |
             .spago
             output
 
-      - name: Set up Node toolchain
-        uses: actions/setup-node@v2
-        with:
-          node-version: "20.x"
-
-      - name: Cache NPM dependencies
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-
-      - name: Install NPM dependencies
-        run: npm install -g spago@next purescript@latest
-
-      - name: Install NPM dependencies
-        run: npm install
-
-      - name: Build the project
-        run: npm run build
-
-      - name: Build and bundle tests
-        run: ./node_modules/@vercel/ncc/dist/ncc/cli.js build --minify test/index.js
+      - name: Build source
+        run: spago build --censor-stats --strict --pedantic-packages
 
       - name: Run tests
-        uses: ./test
-        with:
-          testinput: test
+        run: spago test --offline --censor-stats --strict --pedantic-packages -- --censor-codes=UserDefinedWarning
 
-      - name: Verify Bower & Pulp
-        run: |
-          npm install bower pulp@16.0.2
-          npx bower install
-          npx pulp build
+      - name: Verify formatting
+        run: purs-tidy check src test

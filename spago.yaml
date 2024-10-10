@@ -1,5 +1,11 @@
 package:
   name: github-actions-toolkit
+  publish:
+    license: MIT
+    version: 0.5.0
+    location:
+      githubOwner: purescript-contrib
+      githubRepo: purescript-github-actions-toolkit
   dependencies:
     - aff
     - aff-promise
@@ -19,6 +25,6 @@ package:
     dependencies:
       - either
 workspace:
-  package_set:
-    registry: 50.4.0
-  extra_packages: {}
+  packageSet:
+    registry: 60.5.0
+  extraPackages: {}
