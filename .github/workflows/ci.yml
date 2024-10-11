@@ -46,11 +46,15 @@ jobs:
       - name: Install NPM dependencies
         run: npm install
 
-      - name: Build source
-        run: spago build --censor-stats --strict --ensure-ranges --pedantic-packages
+      - name: Build the project
+        run: npm run build
 
-      - name: Run tests
-        run: spago test --offline --censor-stats --strict --pedantic-packages
+      - name: Build and bundle tests
+        run: ./node_modules/@vercel/ncc/dist/ncc/cli.js build --minify test/index.js
+
+      - uses: ./test
+        with:
+          testinput: test
 
       - name: Verify formatting
         run: purs-tidy check src test
