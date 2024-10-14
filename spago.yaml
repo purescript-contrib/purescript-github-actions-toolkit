@@ -24,7 +24,4 @@ package:
     main: Test.Main
     dependencies:
       - either
-workspace:
-  packageSet:
-    registry: 60.5.0
-  extraPackages: {}
+workspace: {}
