@@ -2,7 +2,7 @@ package:
   name: github-actions-toolkit
   publish:
     license: MIT
-    version: 0.5.0
+    version: 1.0.0
     location:
       githubOwner: purescript-contrib
       githubRepo: purescript-github-actions-toolkit
