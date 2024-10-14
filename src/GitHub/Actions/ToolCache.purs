@@ -186,7 +186,7 @@ extractXar =
     Nothing, Nothing -> runEffectFn1 extractXar1Impl file
     Just d, Nothing -> runEffectFn2 extractXar2Impl file d
     Nothing, Just f -> runEffectFn2 extractXar2Impl2 file f
-    Just d, Just f ->  runEffectFn3 extractXar3Impl file d f
+    Just d, Just f -> runEffectFn3 extractXar3Impl file d f
 
 foreign import extractZip1Impl :: EffectFn1 FilePath (Promise FilePath)
 
@@ -230,7 +230,7 @@ type CacheDirArgs =
   }
 
 -- | Caches a directory and installs it into the tool cacheDir
-cacheDir' :: { sourceDir :: String, tool :: String , version :: String } -> ExceptT Error Aff FilePath
+cacheDir' :: { sourceDir :: String, tool :: String, version :: String } -> ExceptT Error Aff FilePath
 cacheDir' { sourceDir, tool, version } = cacheDir { sourceDir, tool, version, arch: Nothing }
 
 -- | Caches a directory and installs it into the tool cacheDir

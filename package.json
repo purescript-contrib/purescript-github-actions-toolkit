@@ -2,15 +2,17 @@
   "private": true,
   "scripts": {
     "build": "eslint src && spago build --strict --censor-stats --pedantic-packages",
-    "test": "spago test --no-install"
+    "test": "spago test --offline"
   },
   "devDependencies": {
-    "@vercel/ncc": "^0.38.1",
-    "eslint": "^8.57.0"
+    "@eslint/js": "^9.12.0",
+    "@vercel/ncc": "^0.38.2",
+    "eslint": "^9.12.0",
+    "globals": "^15.11.0"
   },
   "dependencies": {
     "@actions/cache": "^3.2.4",
-    "@actions/core": "^1.10.1",
+    "@actions/core": "^1.11.1",
     "@actions/exec": "^1.1.1",
     "@actions/io": "^1.1.3",
     "@actions/tool-cache": "^2.0.1"
