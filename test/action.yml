@@ -1,7 +1,7 @@
 name: 'Test'
 description: 'Test out bindings in this library'
 runs:
-  using: 'node20'
+  using: 'node24'
   main: '../dist/index.js'
 inputs:
   testinput:
