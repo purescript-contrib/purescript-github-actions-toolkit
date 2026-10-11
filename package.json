@@ -1,12 +1,12 @@
 {
   "private": true,
   "scripts": {
-    "build": "eslint src && spago build --strict --censor-stats --pedantic-packages",
-    "test": "spago test --no-install"
+    "build": "oxlint src && spago build --strict --censor-stats --pedantic-packages",
+    "test": "spago test --offline"
   },
   "devDependencies": {
-    "@vercel/ncc": "^0.38.1",
-    "eslint": "^8.57.0"
+    "@vercel/ncc": "^0.45.0",
+    "oxlint": "^1.87.0"
   },
   "dependencies": {
     "@actions/cache": "^3.2.4",

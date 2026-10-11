@@ -11,6 +11,8 @@ New features:
 Bugfixes:
 
 Other improvements:
+- Update to Spago 1.0, preserving published dependency ranges, and remove Bower support.
+- Update CI actions, Node.js, and development tooling.
 
 ## [v0.5.0](https://github.com/purescript-contrib/purescript-github-actions-toolkit/releases/tag/v0.5.0) - 2022-04-29
 
